@@ -3,7 +3,7 @@
 ```java
  		 String s="12345";
          //字符串转数组
-        char[] chars = s.toCharArray();
+    char[] chars = s.toCharArray();
 ```
 
 # 数组转list
