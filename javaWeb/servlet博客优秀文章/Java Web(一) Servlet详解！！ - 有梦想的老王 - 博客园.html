@@ -1,0 +1,1473 @@
+<!DOCTYPE html>
+<html lang="zh-cn"><head>
+<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="referrer" content="origin-when-crossorigin">
+    <meta name="description" content="这篇文章到上一篇，距离的有点遥远呀，隔了大概有两个月把，中间在家过了个年，哈哈~ 现在重新开始拾起。 --WZY 一、什么是servlet？ 处理请求和发送响应的过程是由一种叫做Servlet的程序来">
+    <meta property="og:description" content="这篇文章到上一篇，距离的有点遥远呀，隔了大概有两个月把，中间在家过了个年，哈哈~ 现在重新开始拾起。 --WZY 一、什么是servlet？ 处理请求和发送响应的过程是由一种叫做Servlet的程序来">
+    <meta http-equiv="Cache-Control" content="no-transform">
+    <meta http-equiv="Cache-Control" content="no-siteapp">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Java Web(一) Servlet详解！！ - 有梦想的老王 - 博客园</title>
+    <link id="favicon" rel="shortcut icon" href="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/6399262_002.html" type="image/svg+xml">
+    
+    <link rel="stylesheet" href="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.css">
+    
+    <link type="text/css" rel="stylesheet" href="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/custom.css">
+    <link id="mobile-style" media="only screen and (max-width: 767px)" type="text/css" rel="stylesheet" href="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bundle-SimpleMemory-mobile.css">
+    
+    <link type="application/rss+xml" rel="alternate" href="https://www.cnblogs.com/whgk/rss">
+    <link type="application/rsd+xml" rel="EditURI" href="https://www.cnblogs.com/whgk/rsd.xml">
+    <link type="application/wlwmanifest+xml" rel="wlwmanifest" href="https://www.cnblogs.com/whgk/wlwmanifest.xml">
+    <script src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/osd.js"></script><script async="" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/analytics.js"></script><script>
+        var currentBlogId = 262246;
+        var currentBlogApp = 'whgk';
+        var cb_enable_mathjax = true;
+        var isLogined = false;
+        var isBlogOwner = false;
+        var skinName = 'SimpleMemory';
+        var visitorUserId = '';
+    </script>
+        <script>
+            var currentPostDateAdded = '2017-02-17 03:26';
+        </script>
+    <script src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery-2.js"></script>
+    <script src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/blog-common.js"></script><style type="text/css">.medium-zoom-overlay{position:fixed;top:0;right:0;bottom:0;left:0;opacity:0;transition:opacity .3s;will-change:opacity}.medium-zoom--opened .medium-zoom-overlay{cursor:pointer;cursor:zoom-out;opacity:1}.medium-zoom-image{cursor:pointer;cursor:zoom-in;transition:transform .3s cubic-bezier(.2,0,.2,1)!important}.medium-zoom-image--hidden{visibility:hidden}.medium-zoom-image--opened{position:relative;cursor:pointer;cursor:zoom-out;will-change:transform}</style>
+    <script type="text/x-mathjax-config;executed=true">
+        MathJax.Hub.Config({
+        tex2jax: { inlineMath: [['$','$'], ['\\(','\\)']], processClass: 'math', processEscapes: true },
+        TeX: {
+        equationNumbers: { autoNumber: ['AMS'], useLabelIds: true },
+        extensions: ['extpfeil.js', 'mediawiki-texvc.js'],
+        Macros: {bm: "\\boldsymbol"}
+        },
+        'HTML-CSS': { linebreaks: { automatic: true } },
+        SVG: { linebreaks: { automatic: true } }
+        });
+    </script>
+    <script src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/MathJax.js"></script>
+    
+<style type="text/css">.MathJax_Hover_Frame {border-radius: .25em; -webkit-border-radius: .25em; -moz-border-radius: .25em; -khtml-border-radius: .25em; box-shadow: 0px 0px 15px #83A; -webkit-box-shadow: 0px 0px 15px #83A; -moz-box-shadow: 0px 0px 15px #83A; -khtml-box-shadow: 0px 0px 15px #83A; border: 1px solid #A6D ! important; display: inline-block; position: absolute}
+.MathJax_Menu_Button .MathJax_Hover_Arrow {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 4px; -webkit-border-radius: 4px; -moz-border-radius: 4px; -khtml-border-radius: 4px; font-family: 'Courier New',Courier; font-size: 9px; color: #F0F0F0}
+.MathJax_Menu_Button .MathJax_Hover_Arrow span {display: block; background-color: #AAA; border: 1px solid; border-radius: 3px; line-height: 0; padding: 4px}
+.MathJax_Hover_Arrow:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_Hover_Arrow:hover span {background-color: #CCC!important}
+</style><style type="text/css">#MathJax_About {position: fixed; left: 50%; width: auto; text-align: center; border: 3px outset; padding: 1em 2em; background-color: #DDDDDD; color: black; cursor: default; font-family: message-box; font-size: 120%; font-style: normal; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; border-radius: 15px; -webkit-border-radius: 15px; -moz-border-radius: 15px; -khtml-border-radius: 15px; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_About.MathJax_MousePost {outline: none}
+.MathJax_Menu {position: absolute; background-color: white; color: black; width: auto; padding: 2px; border: 1px solid #CCCCCC; margin: 0; cursor: default; font: menu; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; z-index: 201; box-shadow: 0px 10px 20px #808080; -webkit-box-shadow: 0px 10px 20px #808080; -moz-box-shadow: 0px 10px 20px #808080; -khtml-box-shadow: 0px 10px 20px #808080; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+.MathJax_MenuItem {padding: 2px 2em; background: transparent}
+.MathJax_MenuArrow {position: absolute; right: .5em; padding-top: .25em; color: #666666; font-size: .75em}
+.MathJax_MenuActive .MathJax_MenuArrow {color: white}
+.MathJax_MenuArrow.RTL {left: .5em; right: auto}
+.MathJax_MenuCheck {position: absolute; left: .7em}
+.MathJax_MenuCheck.RTL {right: .7em; left: auto}
+.MathJax_MenuRadioCheck {position: absolute; left: 1em}
+.MathJax_MenuRadioCheck.RTL {right: 1em; left: auto}
+.MathJax_MenuLabel {padding: 2px 2em 4px 1.33em; font-style: italic}
+.MathJax_MenuRule {border-top: 1px solid #CCCCCC; margin: 4px 1px 0px}
+.MathJax_MenuDisabled {color: GrayText}
+.MathJax_MenuActive {background-color: Highlight; color: HighlightText}
+.MathJax_MenuDisabled:focus, .MathJax_MenuLabel:focus {background-color: #E8E8E8}
+.MathJax_ContextMenu:focus {outline: none}
+.MathJax_ContextMenu .MathJax_MenuItem:focus {outline: none}
+#MathJax_AboutClose {top: .2em; right: .2em}
+.MathJax_Menu .MathJax_MenuClose {top: -10px; left: -10px}
+.MathJax_MenuClose {position: absolute; cursor: pointer; display: inline-block; border: 2px solid #AAA; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; font-family: 'Courier New',Courier; font-size: 24px; color: #F0F0F0}
+.MathJax_MenuClose span {display: block; background-color: #AAA; border: 1.5px solid; border-radius: 18px; -webkit-border-radius: 18px; -moz-border-radius: 18px; -khtml-border-radius: 18px; line-height: 0; padding: 8px 0 6px}
+.MathJax_MenuClose:hover {color: white!important; border: 2px solid #CCC!important}
+.MathJax_MenuClose:hover span {background-color: #CCC!important}
+.MathJax_MenuClose:hover:focus {outline: none}
+</style><style type="text/css">.MathJax_Preview .MJXf-math {color: inherit!important}
+</style><style type="text/css">.MJX_Assistive_MathML {position: absolute!important; top: 0; left: 0; clip: rect(1px, 1px, 1px, 1px); padding: 1px 0 0 0!important; border: 0!important; height: 1px!important; width: 1px!important; overflow: hidden!important; display: block!important; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none}
+.MJX_Assistive_MathML.MJX_Assistive_MathML_Block {width: 100%!important}
+</style><style type="text/css">#MathJax_Zoom {position: absolute; background-color: #F0F0F0; overflow: auto; display: block; z-index: 301; padding: .5em; border: 1px solid black; margin: 0; font-weight: normal; font-style: normal; text-align: left; text-indent: 0; text-transform: none; line-height: normal; letter-spacing: normal; word-spacing: normal; word-wrap: normal; white-space: nowrap; float: none; -webkit-box-sizing: content-box; -moz-box-sizing: content-box; box-sizing: content-box; box-shadow: 5px 5px 15px #AAAAAA; -webkit-box-shadow: 5px 5px 15px #AAAAAA; -moz-box-shadow: 5px 5px 15px #AAAAAA; -khtml-box-shadow: 5px 5px 15px #AAAAAA; filter: progid:DXImageTransform.Microsoft.dropshadow(OffX=2, OffY=2, Color='gray', Positive='true')}
+#MathJax_ZoomOverlay {position: absolute; left: 0; top: 0; z-index: 300; display: inline-block; width: 100%; height: 100%; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+#MathJax_ZoomFrame {position: relative; display: inline-block; height: 0; width: 0}
+#MathJax_ZoomEventTrap {position: absolute; left: 0; top: 0; z-index: 302; display: inline-block; border: 0; padding: 0; margin: 0; background-color: white; opacity: 0; filter: alpha(opacity=0)}
+</style><style type="text/css">.MathJax_Preview {color: #888}
+#MathJax_Message {position: fixed; left: 1px; bottom: 2px; background-color: #E6E6E6; border: 1px solid #959595; margin: 0px; padding: 2px 8px; z-index: 102; color: black; font-size: 80%; width: auto; white-space: nowrap}
+#MathJax_MSIE_Frame {position: absolute; top: 0; left: 0; width: 0px; z-index: 101; border: 0px; margin: 0px; padding: 0px}
+.MathJax_Error {color: #CC0000; font-style: italic}
+</style><style type="text/css">.MJXp-script {font-size: .8em}
+.MJXp-right {-webkit-transform-origin: right; -moz-transform-origin: right; -ms-transform-origin: right; -o-transform-origin: right; transform-origin: right}
+.MJXp-bold {font-weight: bold}
+.MJXp-italic {font-style: italic}
+.MJXp-scr {font-family: MathJax_Script,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-frak {font-family: MathJax_Fraktur,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-sf {font-family: MathJax_SansSerif,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-cal {font-family: MathJax_Caligraphic,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-mono {font-family: MathJax_Typewriter,'Times New Roman',Times,STIXGeneral,serif}
+.MJXp-largeop {font-size: 150%}
+.MJXp-largeop.MJXp-int {vertical-align: -.2em}
+.MJXp-math {display: inline-block; line-height: 1.2; text-indent: 0; font-family: 'Times New Roman',Times,STIXGeneral,serif; white-space: nowrap; border-collapse: collapse}
+.MJXp-display {display: block; text-align: center; margin: 1em 0}
+.MJXp-math span {display: inline-block}
+.MJXp-box {display: block!important; text-align: center}
+.MJXp-box:after {content: " "}
+.MJXp-rule {display: block!important; margin-top: .1em}
+.MJXp-char {display: block!important}
+.MJXp-mo {margin: 0 .15em}
+.MJXp-mfrac {margin: 0 .125em; vertical-align: .25em}
+.MJXp-denom {display: inline-table!important; width: 100%}
+.MJXp-denom > * {display: table-row!important}
+.MJXp-surd {vertical-align: top}
+.MJXp-surd > * {display: block!important}
+.MJXp-script-box > *  {display: table!important; height: 50%}
+.MJXp-script-box > * > * {display: table-cell!important; vertical-align: top}
+.MJXp-script-box > *:last-child > * {vertical-align: bottom}
+.MJXp-script-box > * > * > * {display: block!important}
+.MJXp-mphantom {visibility: hidden}
+.MJXp-munderover, .MJXp-munder {display: inline-table!important}
+.MJXp-over {display: inline-block!important; text-align: center}
+.MJXp-over > * {display: block!important}
+.MJXp-munderover > *, .MJXp-munder > * {display: table-row!important}
+.MJXp-mtable {vertical-align: .25em; margin: 0 .125em}
+.MJXp-mtable > * {display: inline-table!important; vertical-align: middle}
+.MJXp-mtr {display: table-row!important}
+.MJXp-mtd {display: table-cell!important; text-align: center; padding: .5em 0 0 .5em}
+.MJXp-mtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-mlabeledtr {display: table-row!important}
+.MJXp-mlabeledtr > .MJXp-mtd:first-child {padding-left: 0}
+.MJXp-mlabeledtr:first-child > .MJXp-mtd {padding-top: 0}
+.MJXp-merror {background-color: #FFFF88; color: #CC0000; border: 1px solid #CC0000; padding: 1px 3px; font-style: normal; font-size: 90%}
+.MJXp-scale0 {-webkit-transform: scaleX(.0); -moz-transform: scaleX(.0); -ms-transform: scaleX(.0); -o-transform: scaleX(.0); transform: scaleX(.0)}
+.MJXp-scale1 {-webkit-transform: scaleX(.1); -moz-transform: scaleX(.1); -ms-transform: scaleX(.1); -o-transform: scaleX(.1); transform: scaleX(.1)}
+.MJXp-scale2 {-webkit-transform: scaleX(.2); -moz-transform: scaleX(.2); -ms-transform: scaleX(.2); -o-transform: scaleX(.2); transform: scaleX(.2)}
+.MJXp-scale3 {-webkit-transform: scaleX(.3); -moz-transform: scaleX(.3); -ms-transform: scaleX(.3); -o-transform: scaleX(.3); transform: scaleX(.3)}
+.MJXp-scale4 {-webkit-transform: scaleX(.4); -moz-transform: scaleX(.4); -ms-transform: scaleX(.4); -o-transform: scaleX(.4); transform: scaleX(.4)}
+.MJXp-scale5 {-webkit-transform: scaleX(.5); -moz-transform: scaleX(.5); -ms-transform: scaleX(.5); -o-transform: scaleX(.5); transform: scaleX(.5)}
+.MJXp-scale6 {-webkit-transform: scaleX(.6); -moz-transform: scaleX(.6); -ms-transform: scaleX(.6); -o-transform: scaleX(.6); transform: scaleX(.6)}
+.MJXp-scale7 {-webkit-transform: scaleX(.7); -moz-transform: scaleX(.7); -ms-transform: scaleX(.7); -o-transform: scaleX(.7); transform: scaleX(.7)}
+.MJXp-scale8 {-webkit-transform: scaleX(.8); -moz-transform: scaleX(.8); -ms-transform: scaleX(.8); -o-transform: scaleX(.8); transform: scaleX(.8)}
+.MJXp-scale9 {-webkit-transform: scaleX(.9); -moz-transform: scaleX(.9); -ms-transform: scaleX(.9); -o-transform: scaleX(.9); transform: scaleX(.9)}
+.MathJax_PHTML .noError {vertical-align: ; font-size: 90%; text-align: left; color: black; padding: 1px 3px; border: 1px solid}
+</style><script src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery_002.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="snapSvg" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/snap.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="tools" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/tools.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="src/script/lib/css.min" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/css.js"></script><link type="text/css" rel="stylesheet" href="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/optiscroll.css"><link type="text/css" rel="stylesheet" href="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/menu_bubble.css"><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="classie" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/classie.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="optiscroll_ToProgress_rotate" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/optiscroll_ToProgress_rotate.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="main4" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/main4.js"></script><link type="text/css" rel="stylesheet" href="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/font_543384_kv876ayucyc.css"><link type="text/css" rel="stylesheet" href="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/google-fonts.css"><meta http-equiv="origin-trial" content="A+b/H0b8RPXNaJgaNFpO0YOFuGK6myDQXlwnJB3SwzvNMfcndat4DZYMrP4ClJIzYWo3/yP2S+8FTZ/lpqbPAAEAAABueyJvcmlnaW4iOiJodHRwczovL2ltYXNkay5nb29nbGVhcGlzLmNvbTo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzVGhpcmRQYXJ0eSI6dHJ1ZX0="><meta http-equiv="origin-trial" content="A9ZgbRtm4pU3oZiuNzOsKcC8ppFSZdcjP2qYcdQrFKVzkmiWH1kdYY1Mi9x7G8+PS8HV9Ha9Cz0gaMdKsiVZIgMAAAB7eyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="AxL6oBxcpn5rQDPKSAs+d0oxNyJYq2/4esBUh3Yx5z8QfcLu+AU8iFCXYRcr/CEEfDnkxxLTsvXPJFQBxHfvkgMAAACBeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A9KPtG5kl3oLTk21xqynDPGQ5t18bSOpwt0w6kGa6dEWbuwjpffmdUpR3W+faZDubGT+KIk2do0BX2ca16x8qAcAAACBeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiVHJ1c3RUb2tlbnMiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="A3HucHUo1oW9s+9kIKz8mLkbcmdaj5lxt3eiIMp1Nh49dkkBlg1Fhg4Fd/r0vL69mRRA36YutI9P/lJUfL8csQoAAACFeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A0OysezhLoCRYomumeYlubLurZTCmsjTb087OvtCy95jNM65cfEsbajrJnhaGwiTxhz38ZZbm+UhUwQuXfVPTg0AAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="AxoOxdZQmIoA1WeAPDixRAeWDdgs7ZtVFfH2y19ziTgD1iaHE5ZGz2UdSjubkWvob9C5PrjUfkWi4ZSLgWk3Xg8AAACLeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1N1YmRvbWFpbiI6dHJ1ZSwiaXNUaGlyZFBhcnR5Ijp0cnVlfQ=="><meta http-equiv="origin-trial" content="A7+rMYR5onPnACrz+niKSeFdH3xw1IyHo2AZSHmxrofRk9w4HcQPMYcpBUKu6OQ6zsdxf4m/vqa6tG6Na4OLpAQAAAB4eyJvcmlnaW4iOiJodHRwczovL2ltYXNkay5nb29nbGVhcGlzLmNvbTo0NDMiLCJmZWF0dXJlIjoiQ29udmVyc2lvbk1lYXN1cmVtZW50IiwiZXhwaXJ5IjoxNjI2MjIwNzk5LCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="AwfG8hAcHnPa/kJ1Co0EvG/K0F9l1s2JZGiDLt2mhC3QI5Fh4qmsmSwrWObZFbRC9ieDaSLU6lHRxhGUF/i9sgoAAACBeyJvcmlnaW4iOiJodHRwczovL2RvdWJsZWNsaWNrLm5ldDo0NDMiLCJmZWF0dXJlIjoiSW50ZXJlc3RDb2hvcnRBUEkiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="AwQ7dCmHkvR6FuOFxAuNnktYSQrGbL4dF+eBkrwNLALc69Wr//PnO1yzns3pjUoCaYbKHtVcnng2hU+8OUm0PAYAAACHeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXN5bmRpY2F0aW9uLmNvbTo0NDMiLCJmZWF0dXJlIjoiSW50ZXJlc3RDb2hvcnRBUEkiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><meta http-equiv="origin-trial" content="AysVDPGQTLD/Scn78x4mLwB1tMfje5jwUpAAzGRpWsr1NzoN7MTFhT3ClmImi2svDZA7V6nWGIV8YTPsSRTe0wYAAACHeyJvcmlnaW4iOiJodHRwczovL2dvb2dsZXRhZ3NlcnZpY2VzLmNvbTo0NDMiLCJmZWF0dXJlIjoiSW50ZXJlc3RDb2hvcnRBUEkiLCJleHBpcnkiOjE2MjYyMjA3OTksImlzU3ViZG9tYWluIjp0cnVlLCJpc1RoaXJkUGFydHkiOnRydWV9"><script src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/pubads_impl_2021060201.js" async=""></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="base" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/base.js"></script><link href="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery.css" rel="stylesheet" type="text/css"><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="TweenMax_MyTween" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/TweenMax_MyTween.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="clipboard" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/clipboard.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="articleStatement" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/articleStatement.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="RibbonsEffect" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/RibbonsEffect.js"></script><link type="text/css" rel="stylesheet" href="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery_002.css"><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="title" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/articleTitle.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="bootstrap" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/bootstrap.js"></script><link type="text/css" rel="stylesheet" href="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/marvin.css"><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="marvin" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/marvin.js"></script><script type="text/javascript" charset="utf-8" async="" data-requirecontext="_" data-requiremodule="fancybox" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/jquery.js"></script><link rel="preload" href="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js" as="script"><script type="text/javascript" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/integrator.js"></script></head>
+<body class="no-navbar" style="overflow: auto;"><div id="dayNightSwitch" class="generalWrapper">    <div class="onOff daySwitch">        <div class="star star1"></div>        <div class="star star2"></div>        <div class="star star3"></div>        <div class="star star4"></div>        <div class="star star5"></div>        <div class="star sky"></div>        <div class="sunMoon">            <div class="crater crater1"></div>            <div class="crater crater2"></div>            <div class="crater crater3"></div>            <div class="cloud part1"></div>            <div class="cloud part2"></div>        </div>    </div></div><div id="MathJax_Message" style="display: none;"></div>
+    <a name="top" style="display: none;"></a>
+    <div id="top_nav" class="navbar forpc navbar-custom">
+        <nav id="nav_main" class="navbar-main">
+            <ul id="nav_left" class="navbar-list navbar-left">
+                <li class="navbar-branding"><a href="https://www.cnblogs.com/" title="开发者的网上家园"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/logo.svg" alt="博客园Logo"></a></li>
+                <li><a href="https://www.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-sitehome')">首页</a></li>
+                <li><a href="https://news.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-news')">新闻</a></li>
+                <li><a href="https://q.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-q')">博问</a></li>
+                <li><a id="nav_brandzone" href="https://brands.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-brands')">专区</a></li>
+                <li><a href="https://ing.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-ing')">闪存</a></li>
+                <li><a href="https://edu.cnblogs.com/" onclick="ga('send', 'event', 'Link', 'click', 'skin-navbar-edu')">班级</a></li>
+            </ul>
+            <ul id="nav_right" class="navbar-list navbar-right">
+                <li>
+                    <form id="zzk_search" class="navbar-search" action="https://zzk.cnblogs.com/s" method="get">
+                        <input name="w" id="zzk_search_input" placeholder="代码改变世界" type="text" tabindex="3">
+                        <button type="submit" id="zzk_search_button">
+                            <img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/search.svg" alt="搜索">
+                        </button>
+                    </form>
+                </li>
+                <li id="navbar_login_status" class="navbar-list">
+                    <a class="navbar-user-info navbar-blog" href="https://i.cnblogs.com/EditPosts.aspx?opt=1" alt="写随笔" title="写随笔" style="display: none;">
+                        <img id="new_post_icon" class="navbar-icon" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/newpost.svg" alt="写随笔">
+                    </a>
+                    <a id="navblog-myblog-icon" class="navbar-user-info navbar-blog" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx" alt="我的博客" title="我的博客" style="display: none;">
+                        <img id="myblog_icon" class="navbar-icon" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/myblog.svg" alt="我的博客">
+                    </a>
+                    <a class="navbar-user-info navbar-message navbar-icon-wrapper" href="https://msg.cnblogs.com/" alt="短消息" title="短消息" style="display: none;">
+                        <img id="msg_icon" class="navbar-icon" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/message.svg" alt="短消息">
+                        <span id="msg_count" style="display: none"></span>
+                    </a>
+                    <div id="user_info" class="navbar-user-info dropdown" style="display: none;">
+                        <a class="dropdown-button" href="https://home.cnblogs.com/">
+                            <img id="user_icon" class="navbar-avatar" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/avatar-default.svg" alt="用户头像">
+                        </a>
+                        <div class="dropdown-menu">
+                            <a id="navblog-myblog-text" href="https://passport.cnblogs.com/GetBlogApplyStatus.aspx">我的博客</a>
+                            <a href="https://home.cnblogs.com/">我的园子</a>
+                            <a href="https://account.cnblogs.com/settings/account">账号设置</a>
+                            <a href="javascript:void(0)" id="navbar_lite_mode_toggle" title="简洁模式会使用简洁款皮肤显示所有博客">
+    简洁模式 <img id="navbar_lite_mode_on" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/lite-mode-check.svg" class="hide"><span id="navbar_lite_mode_spinner" class="hide">...</span>
+</a>
+                            <a href="javascript:void(0)" onclick="account.logout();">退出登录</a>
+                        </div>
+                    </div>
+                    <a class="navbar-anonymous" href="https://account.cnblogs.com/signup/" style="display: inline;">注册</a>
+                    <a class="navbar-anonymous" href="javascript:void(0);" onclick="account.login()" style="display: inline;">登录</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    
+    <!--done-->
+<div id="home" style="margin-top: 261px;">
+<div id="header">
+	<div id="blogTitle">
+        <a id="lnkBlogLogo" href="https://www.cnblogs.com/whgk/"><img id="blogLogo" src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/logo.gif" alt="返回主页"></a>		
+		
+<!--done-->
+<h1><a id="Header1_HeaderTitle" class="headermaintitle HeaderMainTitle" href="https://www.cnblogs.com/whgk/">路虽远，梦还在！</a>
+</h1>
+<h2>无需提醒的自觉，以约束为前提的自由。根植于内心的修养，为别人着想的善良。</h2>
+
+
+
+
+		
+	</div><!--end: blogTitle 博客的标题和副标题 -->
+	<div id="navigator">
+		
+<ul id="navList">
+<li><a id="blog_nav_sitehome" class="menu" href="https://www.cnblogs.com/">
+博客园</a>
+</li>
+<li>
+<a id="blog_nav_myhome" class="menu" href="https://www.cnblogs.com/whgk/">
+首页</a>
+</li>
+<li>
+
+<a id="blog_nav_newpost" class="menu" href="https://i.cnblogs.com/EditPosts.aspx?opt=1">
+新随笔</a>
+</li>
+<li>
+<a id="blog_nav_contact" class="menu" href="https://msg.cnblogs.com/send/%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B">
+联系</a></li>
+<li>
+<a id="blog_nav_rss" class="menu" href="javascript:void(0)" data-rss="https://www.cnblogs.com/whgk/rss/">
+订阅</a>
+<!--<partial name="./Shared/_XmlLink.cshtml" model="Model" /></li>--></li>
+<li>
+<a id="blog_nav_admin" class="menu" href="https://i.cnblogs.com/">
+管理</a>
+</li>
+</ul>
+
+
+		<div class="blogStats">
+			<span id="stats_post_count">随笔 - 140&nbsp; </span>
+<span id="stats_article_count">文章 - 0&nbsp; </span>
+<span id="stats-comment_count">评论 - 578&nbsp; </span>
+<span id="stats-total-view-count">阅读 - 
+<span title="总阅读数: 1997865">
+199万</span></span>
+
+		</div><!--end: blogStats -->
+	</div><!--end: navigator 博客导航栏 -->
+</div><!--end: header 头部 -->
+<div id="main">
+	<div id="mainContent">
+	<div class="forFlow">
+		<div id="post_detail">
+    <!--done-->
+    <div id="topics">
+        <div class="post">
+            <h1 class="postTitle">
+                
+<a id="cb_post_title_url" class="postTitle2 vertical-middle post-del-title" href="https://www.cnblogs.com/whgk/p/6399262.html">
+    <span>Java Web(一) Servlet详解！！</span>
+    
+
+
+
+</a>
+
+            </h1>
+            <div class="clear"></div>
+            <div class="postBody">
+                <div id="cnblogs_post_body" class="blogpost-body blogpost-body-html">
+<p>　　　　这篇文章到上一篇，距离的有点遥远呀，隔了大概有两个月把，中间在家过了个年，哈哈~ 现在重新开始拾起。</p>
+<p>　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　　--WZY</p>
+<p>&nbsp;</p>
+<p><span style="color: rgba(255, 0, 0, 1); font-size: 14pt">一、什么是servlet？</span></p>
+<p>　　　　处理请求和发送响应的过程是由一种叫做Servlet的程序来完成的，并且Servlet是为了解决实现动态页面而衍生的东西。理解这个的前提是了解一些http协议的东西，并且知道B/S模式(浏览器/服务器)。</p>
+<p>　　　　B/S:浏览器/服务器。 浏览器通过网址来访问服务器，比如访问百度，在浏览器中输入www.baidu.com，这个时候浏览器就会显示百度的首页，那么这个具体的过程，步骤是怎样的呢？这个就了解一下<a title="http://www.cnblogs.com/whgk/p/6130882.html" href="http://www.cnblogs.com/whgk/p/6130882.html" target="_blank">http请求和响应</a>了</p>
+<p>　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170214192940050-671180063.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170214192940050-671180063.png" alt="" class="medium-zoom-image" width="705" height="321"></a></p>
+<p>　　　　请求，响应：通过给的链接应该可以知道这两个具体的内容</p>
+<p>&nbsp;</p>
+<p><span style="color: rgba(255, 0, 0, 1); font-size: 14pt">二、tomcat和servlet的关系</span></p>
+<p>　　　　<span style="color: rgba(255, 0, 0, 1)">Tomcat 是Web应用服务器,是一个Servlet/JSP容器</span>. Tomcat 作为Servlet容器,负责处理客户请求,把请求传送给Servlet,并将Servlet的响应传送回给客户.而Servlet是一种运行在支持<span class="baidu-highlight">Java语言</span>的服务器上的组件. Servlet最常见的用途是扩展Java Web服务器功能,提供非常安全的,可移植的,易于使用的CGI替代品.</p>
+<p>　　　　从http协议中的请求和响应可以得知，浏览器发出的请求是一个请求文本，而浏览器接收到的也应该是一个响应文本。但是在上面这个图中，并
+不知道是如何转变的，只知道浏览器发送过来的请求也就是request，我们响应回去的就用response。忽略了其中的细节，现在就来探究一下。</p>
+<p>　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170214204632894-1786729693.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170214204632894-1786729693.png" alt="" class="medium-zoom-image" width="710" height="339"></a></p>
+<p>　　　　　　①：Tomcat将http请求文本接收并解析，然后封装成HttpServletRequest类型的request对象，所有的HTTP头数据读可以通过request对象调用对应的方法查询到。</p>
+<p>　　　　　　②：Tomcat同时会要响应的信息封装为HttpServletResponse类型的response对象，通过设置
+response属性就可以控制要输出到浏览器的内容，然后将response交给tomcat，tomcat就会将其变成响应文本的格式发送给浏览器</p>
+<p>　</p>
+<p>　　　　Java Servlet API 
+是Servlet容器(tomcat)和servlet之间的接口，它定义了serlvet的各种方法，还定义了Servlet容器传送给Servlet
+的对象类，其中最重要的就是ServletRequest和ServletResponse。所以说我们在编写servlet时，需要实现Servlet
+接口，按照其规范进行操作。</p>
+<p>&nbsp;</p>
+<p><span style="color: rgba(255, 0, 0, 1); font-size: 14pt">三、编写Servlet</span></p>
+<p>　　　　在前面，我们已经知道了servlet是什么，为什么需要servlet?（为了实现动态网页，而不是显示静态网页，具体情况可以百度查查），tomcat和servlet的关系？等问题。现在来手动编写一个Servlet。</p>
+<p>　　　　<span style="font-size: 16px; color: rgba(255, 0, 0, 1)">3.1、手动编写servlet。</span></p>
+<p>　　　　　　1、创建一个MyServlet继承HttpServlet，重写doGet和doPost方法，也就是看请求的方式是get还是post，然后用不同的处理方式来处理请求，</p>
+<p>　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216094438629-1196159083.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216094438629-1196159083.png" alt="" class="medium-zoom-image" width="748" height="306"></a></p>
+<p>　　　　　　2、在web.xml中配置MyServlet，为什么需要配置？让浏览器发出的请求知道到达哪个servlet，也就是让tomcat将封装好的request找到对应的servlet让其使用。</p>
+<p>　　　　　　　　　　　　配置四个东西。</p>
+<p>　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216094000972-1276129522.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216094000972-1276129522.png" alt="" class="medium-zoom-image" width="725" height="242"></a></p>
+<p>　　　　　　　　　　　　配置之后，浏览器是如何通过我们配置的信息来找到对应的servlet的。</p>
+<p>　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216094053504-915571176.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216094053504-915571176.png" alt="" class="medium-zoom-image" width="830" height="267"></a></p>
+<p>　　　　　　　　　　　　按照步骤，首先浏览器通过http://localhost:8080/test01/MyServlet来找到
+web.xml中的url-pattern，这就是第一步，匹配到了url-pattern后，就会找到第二步servlet的名字MyServlet，
+知道了名字，就可以通过servlet-name找到第三步，到了第三步，也就能够知道servlet的位置了。然后到其中找到对应的处理方式进行处理。</p>
+<p>　　　　　　　3、实验，验证上面配置成功。</p>
+<p>　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216094649550-2096214829.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216094649550-2096214829.png" alt=""></a>　　　</p>
+<p>　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216094700035-984507451.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216094700035-984507451.png" alt="" class="medium-zoom-image" width="792" height="213"></a></p>
+<p>　　　　<span style="color: rgba(255, 0, 0, 1); font-size: 16px">3.2、利用向导新建MyServlet</span></p>
+<p>　　　　　　　　这个就相对简单了，web.xml不用我们手动配置，工具直接帮我们自动配置了</p>
+<p>　　　　　　　　　　　　1、右击项目，在new选项中有直接新建servlet的选项</p>
+<p>　　　　　　　　　　　　2、配置MyServlet类中的信息</p>
+<p>　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216095540332-191821755.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216095540332-191821755.png" alt="" width="502" height="554"></a>　</p>
+<p>　　　　　　　　　　3、配置web.xml中的servlet信息</p>
+<p>　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216095633754-1304935718.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216095633754-1304935718.png" alt="" width="502" height="550"></a>　　　</p>
+<p>　　　　　　　　4、查看MyServle01类中的代码和web.xml，其中的配置跟手动的配置是一样的，只是用图形化界面，让我们更方便的创建servlet而产生的。</p>
+<p>&nbsp;</p>
+<p>　　　　<span style="color: rgba(255, 0, 0, 1); font-size: 16px">3.3、详解创建servlet的原理</span></p>
+<p>　　　　　　　　1、servlet的生命周期是什么？</p>
+<p>　　　　　　　　2、为什么创建的servlet是继承自httpServlet，而不是直接实现Servlet接口？</p>
+<p>　　　　　　　　3、servlet的生命周期中，可以看出，执行的是service方法，为什么我们就只需要写doGet和doPost方法呢？</p>
+<p>　　　　　　　　等这一系列的问题，我们都应该知道，而不应该就单纯的知道如何配置和使用servlet?上面的问题，一一来解答。</p>
+<p>　　　　　　　　1、servlet的生命周期是什么？</p>
+<p>　　　　　　　　　　服务器启动时(web.xml中配置load-on-startup=1，默认为0)或者第一次请求该servlet时，就会初始化一个Servlet对象，也就是会执行初始化方法init(ServletConfig conf)</p>
+<p>　　　　　　　　　　该servlet对象去处理所有客户端请求，在service(ServletRequest req，ServletResponse res)方法中执行</p>
+<p>　　　　　　　　　　最后服务器关闭时，才会销毁这个servlet对象，执行destroy()方法。</p>
+<p>　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216103737254-1072057229.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216103737254-1072057229.png" alt="" class="medium-zoom-image" width="752" height="354"></a></p>
+<p>　　　　　　　　2、为什么创建的servlet是继承自httpServlet，而不是直接实现Servlet接口？</p>
+<p>　　　　　　　　3、servlet的生命周期中，可以看出，执行的是service方法，为什么我们就只需要写doGet和doPost方法呢？</p>
+<p>　　　　　　　　　　查看源码，httpServlet的继承结构。</p>
+<p>　　　　　　　　　　　　　httpServlet继承GenericServlet。懂的人立马就应该知道，GenericServlet(通用Servlet)的作用是什么？大概的就是将实现Servlet接口的方法，简化编写servlet的步骤。具体下面详解</p>
+<p>　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216104143472-1013662984.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216104143472-1013662984.png" alt="" class="medium-zoom-image" width="555" height="27"></a></p>
+<p>　　　　　　　　　　　　　GenericServlet的继承结构，实现了Servlet接口和ServletConfig接口，</p>
+<p>　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216104540738-1388356015.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216104540738-1388356015.png" alt="" class="medium-zoom-image" width="599" height="26"></a>　　　</p>
+<p>　　　　　　　　　　　　　Servlet接口内容</p>
+<p>　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216142610660-322166979.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216142610660-322166979.png" alt="" width="306" height="151"></a>　</p>
+<p>　　　　　　　　　　　　　　　　从这里可以看到，Servlet生命周期的三个关键方法，init、service、destroy。还有另外两
+个方法，一个getServletConfig()方法来获取ServletConfig对象，ServletConfig对象可以获取到Servlet
+的一些信息，ServletName、ServletContext、InitParameter、InitParameterNames、通过查看
+ServletConfig这个接口就可以知道</p>
+<p>　　　　　　　　　　　　　ServletConfig接口内容</p>
+<p>　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216143011050-806963452.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216143011050-806963452.png" alt="" width="302" height="133"></a></p>
+<p>　　　　　　　　　　　　　　　　其中ServletContext对象是servlet上下文对象，功能有很多，获得了ServletContext对象，就能获取大部分我们需要的信息，比如获取servlet的路径，等方法。</p>
+<p>　　　　　　　　　　　　　　　到此，就知道了Servlet接口中的内容和作用，总结起来就是，三个生命周期运行的方法，获取
+ServletConfig，而通过ServletConfig又可以获取到ServletContext。而GenericServlet实现了
+Servlet接口后，也就说明我们可以直接继承GenericServlet，就可以使用上面我们所介绍Servlet接口中的那几个方法了，能拿到
+ServletConfig，也可以拿到ServletContext，不过那样太麻烦，不能直接获取ServletContext，所以
+GenericServlet除了实现Servlet接口外，还实现了ServletConfig接口，那样，就可以直接获取
+ServletContext了。</p>
+<p>&nbsp;　　　　　　　　　　　　　GenericServlet类的内容详解</p>
+<p>　　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216145502191-411577839.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216145502191-411577839.png" alt="" width="224" height="305"></a></p>
+<p>　　　　　　　　　　　　　　　　看上图，用红色框框起来的就是实现Servlet和ServletConfig接口所实现的方法，有9个，这很正
+常，但是我们可以发现，init方法有两个，一个是带有参数ServletConfig的，一个有无参的方法，为什么这样设计？这里需要知道其中做了什么
+事情，来看看这两个方法分别做了什么事？</p>
+<p>　　　　　　　　　　　　　　　　init(ServletConfig config)</p>
+<p>　　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216145829785-244456335.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216145829785-244456335.png" alt="" class="medium-zoom-image" width="626" height="70"></a>　</p>
+<p>　　　　　　　　　　　　　　　　init()</p>
+<p>　　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216145902488-312998049.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216145902488-312998049.png" alt="" class="medium-zoom-image" width="625" height="64"></a>　</p>
+<p>　　　　　　　　　　　　　　　　一个成员变量config</p>
+<p>　　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216145934441-854020880.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216145934441-854020880.png" alt="" class="medium-zoom-image" width="583" height="29"></a>　</p>
+<p>　　　　　　　　　　　　　　　　getServletConfig()</p>
+<p>　　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216150037300-348044601.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216150037300-348044601.png" alt="" class="medium-zoom-image" width="595" height="59"></a>　</p>
+<p>　　　　　　　　　　　　　　　　通过这几个方法一起来讲解，首先看init(ServletConfig 
+config)方法，因为只有init(ServletConfig 
+config)中带有ServletConfig对象，为了方便能够在其他地方也能直接使用ServletConfig对象，而不仅仅局限在
+init(ServletConfig config)方法中，所以创建一个私有的成员变量config，在init(ServletConfig 
+config)方法中就将其赋值给config，然后通过getServletConfig()方法就能够获取ServletConfig对象了，这个可
+以理解，但是在init(ServletConfig 
+config)中，158行，还调用了一个init()方法，并且这个init()方法是空的，什么读没有，这是为什么呢？这个原因是为了防止一件事情，
+当我们需要在init方法中做一点别的事情，我们想到的方法就是继承GenericServlet并且重写了init(ServletConfig 
+config)方法，这样依赖，就破坏了原本在GenericServlet类中init(ServletConfig 
+config)写的代码了，也就是在GenericServlet类中的成员变量config会一直是null，无法得到赋值，因为被重写了，就不会在执
+行GenericServlet中init(ServletConfig 
+config)方法中的代码。要想赋值，就必须在重写的init(ServletConfig 
+config)方法中调用父类的init(ServletConfig config)方法，也就是super.init(ServletConfig 
+config)，这样一来，就很不方便，怕有时候会忘了写这句代码，所以在GenericServlet类中增加一个init()方法，以后需要在
+init方法中需要初始化别的数据，只需要重写init()这个方法，而不需要去覆盖init(ServletConfig 
+config)这个方法，这样设计，就好很多，不用在管init(ServletConfig config)这个其中的内容了。也不用出现其他的问题。</p>
+<p>　　　　　　　　　　　　　　　　service(ServletRequest req, ServletResponse res)</p>
+<p>　　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216151326800-261692386.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216151326800-261692386.png" alt="" class="medium-zoom-image" width="662" height="50"></a>　</p>
+<p>　　　　　　　　　　　　　　　　　　　一个抽象方法，说明在GenericServlet类中并没有实现该内容，那么我们想到的是，在它上面肯定
+还有一层，也就是还有一个子类继承它，实现该方法，要是让我们自己写的Servlet继承GenericServlet，需要自己写service方法，
+那岂不是累死，并且我们可以看到，service方法中的参数还是ServletRequest，ServletResponse。并没有跟http相关
+对象挂钩，所以我们接着往下面看。</p>
+<p>　　　　　　　　　　　HttpServlet类详解</p>
+<p>　　　　　　　　　　　　　　　继承了GenericServlet类，通过我们上面的推测，这个类主要的功能肯定是实现service方法的各种细节和设计。并且通过类名可以知道，该类就跟http挂钩了。</p>
+<p>　　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216152220082-1786372762.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216152220082-1786372762.png" alt="" width="397" height="411"></a></p>
+<p>　　　　　　　　　　　　　　　　关注service(HttpServletRequest req, HttpServletResponse
+ resp)方法和service(ServletRequest req, ServletResponse res)方法。</p>
+<p>　　　　　　　　　　　　　　　　　　service(ServletRequest req, ServletResponse res)方法</p>
+<p>　　　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216152409566-1602415910.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216152409566-1602415910.png" alt="" class="medium-zoom-image" width="582" height="213"></a>　　</p>
+<p>　　　　　　　　　　　　　　　　　　　　该方法中就做一件事情，就是将ServletRequest和ServletResponse这两个对象强转为HttpServletRequest和HttpServletResponse对象。为什么能这样转？</p>
+<p>　　　　　　　　　　　　　　　　　　　　　　首先要知道req、res是什么类型，通过打印System.out.println(req)，可
+以知道，req实际上的类型是org.apache.catalina.connector.RequestFacade
+　　　　　　　　　　　　　　　　　　　　　　　　　Tomcat中的源码。</p>
+<p>　　　　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216153430191-1401298895.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216153430191-1401298895.png" alt="" width="568" height="21"></a>　</p>
+<p>　　　　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216152630363-1042785925.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216152630363-1042785925.png" alt="" class="medium-zoom-image" width="572" height="32"></a>　　　</p>
+<p>　　　　　　　　　　　　　　　　　　　　通过图可以得知，req的继承结构：RequestFacade、
+httpServletRequest、ServletRequest，我们知道本身req是ServletRequest，那么从继承结构上看，它也可
+以看成HttpServletRequest，也可以看成ServletRequest，所以强转为HttpServletRequest是可以的，如果
+不明白，我举个例子，ArrayList、List、Object 这个，Object obj = new ArrayList();&nbsp; 
+List list = new ArrayList();&nbsp; 一个ArrayList对象可以看成List对象， 
+也可以看成一个Object对象，现在obj是不是可以堪称List对象呢？答案是可以的，因为obj就是ArrayList对象，既然是
+ArrayList对象，那么就可以看成是List对象。一样的道理，RequestFacade 对应 
+ArrayList、httpServleRequest对应 List、 ServletRequest 对应 Object。</p>
+<p>　　　　　　　　　　　　　　　　　　　　转换为httpServletRequest和HttpServletResponse对象之后，在调用
+service(HttpServletRequest req, HttpServletResponse resp)方法。</p>
+<p>　　　　　　　　　　　　　　　　service(HttpServletRequest req, HttpServletResponse resp)</p>
+<p>　　　　　　　　　　　　　　　　　　　　这个方法就是判断浏览器过来的请求方式是哪种，每种的处理方式不一样，我们常用的就是get，post，
+并且，我们处理的方式可能有很多的内容，所以，在该方法内会将get，post等其他5种请求方式提取出来，变成单个的方法，然后我们需要编写
+servlet时，就可以直接重写doGet或者doPost方法就行了，而不是重写service方法，更加有针对性。所以这里就回到了我们上面编写
+servlet时的情况，继承httpServlet，而只要重写两个方法，一个doGet，一个doPost，其实就是service方法会调用这两个
+方法中的一个(看请求方式)。所以也就解答了我们一开始提的问题3。　　</p>
+<p>&nbsp;　　　　　　　　　　　　　　　　　　　　</p>
+<p><span style="color: rgba(255, 0, 0, 1); font-size: 14pt">四、几个重点的对象。ServletConfig、ServletContext，request、response</span></p>
+<p>　　　　　　 讲解四大类，ServletConfig对象，ServletContext对象、request对象，response对象</p>
+<p>　　　　<span style="color: rgba(255, 0, 0, 1); font-size: 16px">ServletConfig对象</span></p>
+<p>　　　　　　　　获取途径：getServletConfig();&nbsp;</p>
+<p>　　　　　　　　功能：上面大概提及了一下，能得到四个东西，</p>
+<p>　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216193829863-177507047.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216193829863-177507047.png" alt="" width="271" height="114"></a></p>
+<p>　　　　　　　　　　　　getServletName();&nbsp; //获取servlet的名称，也就是我们在web.xml中配置的servlet-name</p>
+<p>　　　　　　　　　　　　getServletContext(); //获取ServletContext对象，该对象的作用看下面讲解</p>
+<p>　　　　　　　　　　　　getInitParameter(String); //获取在servlet中初始化参数的值。这里注意与全局初始化参数的区分。这个获取的只是在该servlet下的初始化参数</p>
+<p>　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170216195140550-371826071.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170216195140550-371826071.png" alt="" class="medium-zoom-image" width="613" height="208"></a></p>
+<p>&nbsp;　　　　　　　　　　　　getInitParameterNames(); //获取在Servlet中所有初始化参数的名字，也就是key值，可以通过key值，来找到各个初始化参数的value值。注意返回的是枚举类型</p>
+<p>　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217091747144-810654839.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217091747144-810654839.png" alt="" class="medium-zoom-image" width="720" height="260"></a></p>
+<p>　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217091914597-1623014325.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217091914597-1623014325.png" alt="" class="medium-zoom-image" width="801" height="251"></a></p>
+<p>　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217091935300-1981582648.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217091935300-1981582648.png" alt="" width="486" height="167"></a></p>
+<p>　　　　　　　　　　　注意：在上面我们所分析的源码过程中，我们就知道，其实可以不用先获得ServletConfig，然后在获取其各种参数，
+可以直接使用其方法，比如上面我们用的ServletConfig().getServletName();可以直接写成
+getServletName();而不用在先获取ServletConfig();了，原因就是在GenericServlet中，已经帮我们获取了这
+些数据，我们只需要直接拿就行。</p>
+<p>&nbsp;</p>
+<p>　　　　　　<span style="color: rgba(255, 0, 0, 1); font-size: 16px">ServletContext对象</span></p>
+<p>　　　　　　　　　　　获取途径：getServletContext(); 
+、getServletConfig().getServletContext();　　//这两种获取方式的区别就跟上面的解释一样，第一种是直接拿，
+在GenericServlet中已经帮我们用getServletConfig().getServletContext();拿到了
+ServletContext。我们只需要直接获取就行了，第二种就相当于我们自己在获取一遍，两种读是一样的。</p>
+<p>　　　　　　　　　　　功能：tomcat为每个web项目都创建一个ServletContext实例，tomcat在启动时创建，服务器关闭时
+销毁，在一个web项目中共享数据，管理web项目资源，为整个web配置公共信息等，通俗点讲，就是一个web项目，就存在一个
+ServletContext实例，每个Servlet读可以访问到它。</p>
+<p>　　　　　　　　　　　　　　1、web项目中共享数据，getAttribute(String name)、setAttribute(String name, Object obj)、removeAttribute(String name)</p>
+<p>　　　　　　　　　　　　　　　　　　setAttribute(String name, Object obj) 在web项目范围内存放内容，以便让在web项目中所有的servlet读能访问到</p>
+<p>　　　　　　　　　　　　　　　　　　getAttribute(String name) 通过指定名称获得内容</p>
+<p>　　　　　　　　　　　　　　　　　　removeAttribute(String name) 通过指定名称移除内容&nbsp; 　</p>
+<p>&nbsp;　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217100021019-1747366315.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217100021019-1747366315.png" alt="" class="medium-zoom-image" width="538" height="45"></a></p>
+<p>　　　　　　　　　　　　　　　　　　 <a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217100049254-1938338032.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217100049254-1938338032.png" alt="" class="medium-zoom-image" width="538" height="81"></a>　　</p>
+<p>　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217100106379-1506943167.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217100106379-1506943167.png" alt="" class="medium-zoom-image" width="523" height="77"></a>　　</p>
+<p>　　　　　　　　　　　　　　2、整个web项目初始化参数 //这个就是全局初始化参数，每个Servlet中都能获取到该初始化值</p>
+<p>　　　　　　　　　　　　　　　　　　getInitPatameter(String name)　　//通过指定名称获取初始化值</p>
+<p>　　　　　　　　　　　　　　　　　　getInitParameterNames()　　//获得枚举类型</p>
+<p>&nbsp;　　　　　　　　　　　　　　　　　　web.xml 配置 整个web项目的初始化</p>
+<p>　　　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217101303988-623871756.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217101303988-623871756.png" alt="" class="medium-zoom-image" width="494" height="79"></a></p>
+<p>　　　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217101317597-1875411632.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217101317597-1875411632.png" alt="" class="medium-zoom-image" width="523" height="45"></a></p>
+<p>　　　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217101334441-1632535355.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217101334441-1632535355.png" alt="" width="448" height="71"></a></p>
+<p>　　　　　　　　　　　　　　3、获取web项目资源</p>
+<p>　　　　　　　　　　　　　　　　　　3.1获取web项目下指定资源的路径：getServletContext().getRealPath("/WEB-INF/web.xml")</p>
+<p>　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217102136347-1305457655.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217102136347-1305457655.png" alt="" class="medium-zoom-image" width="555" height="30"></a></p>
+<p>　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217102149113-1528997169.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217102149113-1528997169.png" alt="" class="medium-zoom-image" width="583" height="19"></a></p>
+<p>　　　　　　　　　　　　　　　　　　3.2获取web项目下指定资源的内容，返回的是字节输入流。InputStream getResourceAsStream(java.lang.String path)</p>
+<p>　　　　　　　　　　　　　　　　　　　　前提知识：需要了解流。不知道的可以去看看<a title="http://www.cnblogs.com/whgk/p/5326568.html" href="http://www.cnblogs.com/whgk/p/5326568.html" target="_blank">IO流总结</a>的文章</p>
+<p>　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217105752019-1686962725.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217105752019-1686962725.png" alt="" class="medium-zoom-image" width="628" height="190"></a></p>
+<p>　　　　　　　　　　　　　　　　　　　　输出内容截图一部分</p>
+<p>　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217105820394-1482656955.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217105820394-1482656955.png" alt="" class="medium-zoom-image" width="630" height="259"></a></p>
+<p>&nbsp;</p>
+<p>　　　　　　　　　　　　　　　4、getResourcePaths(java.lang.String path)&nbsp; 指定路径下的所有内容。</p>
+<p>　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217110536316-752633624.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217110536316-752633624.png" alt="" class="medium-zoom-image" width="654" height="139"></a></p>
+<p>　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217110549457-1699480159.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217110549457-1699480159.png" alt="" width="511" height="144"></a></p>
+<p>　　　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217110604254-1174782701.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217110604254-1174782701.png" alt="" class="medium-zoom-image" width="642" height="217"></a></p>
+<p>　　　　　　　　　　　　　　　　5还有很多别的方法，暂时用到的就这几个了，以后需要在用的，就查看源码，看API。</p>
+<p>　　　　　　<span style="color: rgba(255, 0, 0, 1); font-size: 16px">request对象</span></p>
+<p>　　　　　　　　　　我们知道，request就是将请求文本封装而成的对象，所以通过request能获得请求文本中的所有内容，请求头、请求体、请求行 。</p>
+<p>　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217113102004-1305201880.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217113102004-1305201880.png" alt="" class="medium-zoom-image" width="710" height="259"></a></p>
+<p>　　　　　　　　　　　　1、请求行内容的获取。</p>
+<p>　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217112157910-1493109100.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217112157910-1493109100.png" alt="" class="medium-zoom-image" width="569" height="106"></a>　</p>
+<p>　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217112213488-1676592080.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217112213488-1676592080.png" alt="" class="medium-zoom-image" width="673" height="627"></a>　</p>
+<p>　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217112234097-1109437412.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217112234097-1109437412.png" alt="" width="454" height="72"></a>　</p>
+<p>　　　　　　　　　　　　2请求头的获取</p>
+<p>　　　　　　　　　　　　　　　　随便百度一个东西，然后查看的请求头，包括以下这些内容，稍作了解。</p>
+<p>　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217113256660-1823637829.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217113256660-1823637829.png" alt="" class="medium-zoom-image" width="698" height="166"></a></p>
+<p>　　　　　　　　　　　　　　　　String getHeader(java.lang.String name) 获得指定头内容String【】</p>
+<p>　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217113439050-289451177.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217113439050-289451177.png" alt="" width="495" height="34"></a></p>
+<p>　　　　　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217113449019-979867352.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217113449019-979867352.png" alt="" width="423" height="29"></a></p>
+<p>　　　　　　　　　　　　　　　　long getDateHeader(java.lang.String name) 获得指定头内容Date</p>
+<p>　　　　　　　　　　　　　　　　int getIntHeader(java.lang.String name)&nbsp; 获得指定头内容int</p>
+<p>　　　　　　　　　　　　　　　　Enumeration getHeaders(java.lang.String name) 获得指定名称所有内容</p>
+<p>　　　　　　　　　　　　3请求体的获取 -- 请求参数的获取</p>
+<p>　　　　　　　　　　　　　　　分两种，一种get请求，一种post请求</p>
+<p>　　　　　　　　　　　　　　　get请求参数：http://localhost:8080/test01/MyServlet?username=jack&amp;password=1234</p>
+<p>　　　　　　　　　　　　　　　post请求参数: &lt;form method="post"&gt;&lt;input type="text" name="username"&gt;</p>
+<p>　　　　　　　　　　　　　　　　String request.getParameter(String) 获得指定名称，一个请求参数值。</p>
+<p>　　　　　　　　　　　　　　　　String[] request.getParameterValues(String) 获得指定名称，所有请求参数值。例如：checkbox、select等</p>
+<p>　　　　　　　　　　　　　　　　Map&lt;String , String[]&gt; request.getParameterMap() 获得所有的请求参数　　</p>
+<p>　　　　</p>
+<p>　　　　　　　　　　　　4请求转发</p>
+<p>　　　　　　　　　　　　　　　　request.getRequestDispatcher(String 
+path).forward(request,response);　　//path:转发后跳转的页面，这里不管用不用"/"开头，都是以web项目根
+开始，因为这是请求转发，请求转发只局限与在同一个web项目下使用，所以这里一直都是从web项目根下开始的，</p>
+<p>　　　　　　　　　　　　　　　　web项目根：</p>
+<p>　　　　　　　　　　　　　　　　　　　　开发：G:\Workspaces\test01\<span style="color: rgba(255, 0, 0, 1)">WebRoot</span>\..</p>
+<p>　　　　　　　　　　　　　　　　　　　　运行时：D:\java\tomcat\apache-tomcat-7.0.53\webapps\<span style="color: rgba(255, 0, 0, 1)">test01</span>\..</p>
+<p>　　　　　　　　　　　　　　　　&nbsp;web站点根：</p>
+<p>　　　　　　　　　　　　　　　　　　　　运行时：D:\java\tomcat\apache-tomcat-7.0.53\<span style="color: rgba(255, 0, 0, 1)">webapps</span>\..</p>
+<p>　　　　　　　　　　　　　　　　从这里可以看出，web项目根就是从该web项目名开始，所以我们请求转发时，只需要接着项目名后面需要访问的路径写就行了，</p>
+<p>　　　　　　　　　　　　　　　　特点：浏览器中url不会改变，也就是浏览器不知道服务器做了什么，是服务器帮我们跳转页面的，并且在转发后的页面，能够继续使用原先的request，因为是原先的request，所以request域中的属性都可以继续获取到。</p>
+<p>　　　　　　　　　　　　　　　　</p>
+<p>　　　　　　<span style="color: rgba(255, 0, 0, 1); font-size: 16px">response对象</span></p>
+<p>　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217141731800-1190823561.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217141731800-1190823561.png" alt="" class="medium-zoom-image" width="715" height="493"></a></p>
+<p>　　　　　　　　常用的一个方法：response.setHeader(java.lang.String name, java.lang.String value) 设置指定的头，一般常用。</p>
+<p>　　　　　　　　　　　　　例如：设置每隔3秒就自动刷新一次，</p>
+<p>　　　　　　　　　　　　　　response.setHeader("Refresh",3);</p>
+<p>　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217144321504-317554648.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217144321504-317554648.png" alt="" class="medium-zoom-image" width="683" height="64"></a></p>
+<p>　　　　　　　　　　　　　　<a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217144436769-1330637125.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217144436769-1330637125.png" alt="" width="211" height="106"></a><a data-fancybox="gallery" href="https://images2015.cnblogs.com/blog/874710/201702/874710-20170217144447535-1374034061.png"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/874710-20170217144447535-1374034061.png" alt="" width="205" height="112"></a></p>
+<p>　　　　　　　　　　　　　　这样可以看到现在时间的秒数，会发现每隔三秒就会自动刷新一次页面。</p>
+<p>　　　　　　　　这个最重要的一个就是重定向，其他的一些操作都被封装到response对象中了，重点讲解重定向</p>
+<p>　　　　　　　　　　重定向(页面跳转)</p>
+<p>　　　　　　　　　　　　方式一：手动方案</p>
+<p>　　　　　　　　　　　　　　　　response.setStatus(302);　　//状态码302就代表重定向</p>
+<p>　　　　　　　　　　　　　　　　response.setHeader("location","http://www.baidu.com");</p>
+<p>　　　　　　　　　　　　方式二：使用封装好的，通过response.sendRedirect("http://www.baidu.com");</p>
+<p>　　　　　　　　　　特点：服务器告诉浏览器要跳转的页面，是浏览器主动去跳转的页面，浏览器知道，也浏览器的地址栏中url会变，是浏览器重新发起一个请求到另外一个页面，所以request是重新发起的，跟请求转发不一样。</p>
+<p>　　　　　　　　　　　　注意：response.sendRedirect(path);　　//</p>
+<p>　　　　　　　　　　　　第一种：response.sendRedirect("/test01/MyServlet01");　　//使用了"/"开头，说明是从web站点根开始，所以需要写<span style="color: rgba(255, 0, 0, 1)">test01</span>/MyServlet01</p>
+<p>　　　　　　　　　　　　第二种：response.sendRedirect("MyServlet01");　　//没有使用"/"开头，说明是从web项目根开始，那么就无需写test01了。</p>
+<p>　　　　　　　　　　　　重定向没有任何局限，可以重定向web项目内的任何路径，也可以访问别的web项目中的路径，并且这里就用"/"区分开
+来，如果使用了"/"开头，就说明我要重新开始定位了，不访问刚才的web项目，自己写项目名，如果没有使用"/"开始，那么就知道是访问刚才那个web
+项目下的servlet，就可以省略项目名了。就是这样来区别。</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p><span style="color: rgba(255, 0, 0, 1); font-size: 14pt">五、总结</span></p>
+<p>　　　　　　这一章节篇幅较长，不过理清很多知识点</p>
+<p>　　　　　　　　　　1、什么是servlet？如果编写servlet？</p>
+<p>　　　　　　　　　　2、分析了servlet的部分源码，知道了其中的一些设计巧妙的东西，比如，本来编写servlet是能看到其生命周期的，但是在其设计下，我们只关注doGet和doPost方法，为什么能这样呢？就可以通过源码中得知。</p>
+<p>　　　　　　　　　　3、servlet的生命周期，web.xml的配置</p>
+<p>　　　　　　　　　　4、servlet中的ServletConfig对象，ServletContext对象，request对象，response对象的详细讲解。包括其中的一些常用的方法。</p>
+<p>　　　　　　　　　　5、下一篇讲解一下request、response的中文乱码问题的解决</p>
+<p>　　　　　　　　　　　　</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>&nbsp;</p>
+<p>　　　　</p>
+<p>&nbsp;</p>
+<br><p class="essaySuffix-eof">__EOF__</p><div class="essaySuffix-box"><div class="essaySuffix-box-left"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/o_20072903030020200729110232784.png" alt=""></div><div class="essaySuffix-box-right"><span class="essaySuffix-right-title">本文作者</span>：<strong><span style="font-size: 12px;"><a href="https://www.cnblogs.com/whgk/p/6399262.html" target="_blank">有梦想的老王</a></span></strong> <br><span style="font-weight: bold; white-space:nowrap;">本文链接</span>：<a href="https://www.cnblogs.com/whgk/p/6399262.html" target="_blank">https://www.cnblogs.com/whgk/p/6399262.html</a><br><span class="essaySuffix-right-title">关于博主</span>：评论和私信会在第一时间回复。或者<a href="https://msg.cnblogs.com/msg/send/whgk" target="_blank">直接私信</a>我。<br><span class="essaySuffix-right-title">版权声明</span>：本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/" alt="BY-NC-SA" title="BY-NC-SA" target="_blank">BY-NC-SA</a> 许可协议。转载请注明出处！<br><span class="essaySuffix-right-title">声援博主</span>：如果您觉得文章对您有帮助，可以点击文章右下角<strong><span style="color: #ff0000; font-size: 12pt;">【<a id="post-up" onclick="votePost(6399262,'Digg')" href="javascript:void(0);">推荐</a>】</span></strong>一下。您的鼓励是博主的最大动力！<br></div><div style="clear: both;"></div></div></div>
+<div id="MySignature"></div>
+<div class="clear"></div>
+<div id="blog_post_info_block"><div id="BlogPostCategory">
+    分类: 
+            <a href="https://www.cnblogs.com/whgk/category/947929.html" target="_blank"><span class="iconfont icon-marketing_fill"></span>Java Web</a></div>
+
+
+    <div id="blog_post_info">
+<div id="green_channel">
+        <a href="javascript:void(0);" id="green_channel_digg" onclick="DiggIt(6399262,cb_blogId,1);green_channel_success(this,'谢谢推荐！');">好文要顶</a>
+        <a id="green_channel_follow" onclick="follow('96c1a905-47b4-e511-9fc1-ac853d9f53cc');" href="javascript:void(0);">关注我</a>
+    <a id="green_channel_favorite" onclick="AddToWz(cb_entryId);return false;" href="javascript:void(0);">收藏该文</a>
+    <a id="green_channel_weibo" href="javascript:void(0);" title="分享至新浪微博" onclick="ShareToTsina()"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/icon_weibo_24.png" alt=""></a>
+    <a id="green_channel_wechat" href="javascript:void(0);" title="分享至微信" onclick="shareOnWechat()"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/wechat.png" alt=""></a>
+</div>
+<div id="author_profile">
+    <div id="author_profile_info" class="author_profile_info">
+            <a href="https://home.cnblogs.com/u/whgk/" target="_blank"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/20200718114645.png" class="author_avatar" alt=""></a>
+        <div id="author_profile_detail" class="author_profile_info">
+            <a href="https://home.cnblogs.com/u/whgk/">有梦想的老王</a><br>
+            <a href="https://home.cnblogs.com/u/whgk/followees/">关注 - 14</a><br>
+            <a href="https://home.cnblogs.com/u/whgk/followers/">粉丝 - 3462</a>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div id="author_profile_honor"></div>
+    <div id="author_profile_follow">
+                <a href="javascript:void(0);" onclick="follow('96c1a905-47b4-e511-9fc1-ac853d9f53cc');return false;">+加关注</a>
+    </div>
+</div>
+<div id="div_digg">
+    <div class="diggit" onclick="votePost(6399262,'Digg')">
+        <span class="diggnum" id="digg_count">138</span>
+    </div>
+    <div class="buryit" onclick="votePost(6399262,'Bury')">
+        <span class="burynum" id="bury_count">0</span>
+    </div>
+    <div class="clear"></div>
+    <div class="diggword" id="digg_tips">
+    </div>
+</div>
+
+<script type="text/javascript">
+    currentDiggType = 0;
+</script></div>
+    <div class="clear"></div>
+    <div id="post_next_prev">
+
+    <a href="https://www.cnblogs.com/whgk/p/6182742.html" class="p_n_p_prefix">« </a> 上一篇：    <a href="https://www.cnblogs.com/whgk/p/6182742.html" title="发布于 2016-12-18 12:17">hibernate(九) 二级缓存和事务级别详讲</a>
+    <br>
+    <a href="https://www.cnblogs.com/whgk/p/6412475.html" class="p_n_p_prefix">» </a> 下一篇：    <a href="https://www.cnblogs.com/whgk/p/6412475.html" title="发布于 2017-02-18 15:28">Java Web(二) Servlet中response、request乱码问题解决</a>
+
+</div>
+</div>
+            </div>
+            <div class="postDesc" style="display: block;">posted @ 
+<span id="post-date">2017-02-17 15:26</span>&nbsp;
+<a href="https://www.cnblogs.com/whgk/">有梦想的老王</a>&nbsp;
+阅读(<span id="post_view_count">213005</span>)&nbsp;
+评论(<span id="post_comment_count">35</span>)&nbsp;
+<a href="https://i.cnblogs.com/EditPosts.aspx?postid=6399262" rel="nofollow">编辑</a>&nbsp;
+<a href="javascript:void(0)" onclick="AddToWz(6399262);return false;">收藏</a>&nbsp;
+<a href="javascript:void(0)" onclick="reportManager.report({ currentUserId: '', targetType: 'blogPost', targetId: '6399262', targetLink: 'https://www.cnblogs.com/whgk/p/6399262.html', title: 'Java Web(一) Servlet详解！！' })">举报</a></div>
+        </div>
+	    
+	    
+    </div><!--end: topics 文章、评论容器-->
+</div>
+<script src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/highlight.js"></script>
+<script>markdown_highlight();</script>
+<script>
+    var allowComments = true, cb_blogId = 262246, cb_blogApp = 'whgk', cb_blogUserGuid = '96c1a905-47b4-e511-9fc1-ac853d9f53cc';
+    var cb_entryId = 6399262, cb_entryCreatedDate = '2017-02-17 15:26', cb_postType = 1;
+    updatePostStats(
+        [cb_entryId],
+        function(id, count) { $("#post_view_count").text(count) },
+        function(id, count) { $("#post_comment_count").text(count) })
+    zoomManager.apply("#cnblogs_post_body img:not(.code_img_closed):not(.code_img_opened)");
+</script>
+<a name="!comments"></a>
+<div id="blog-comments-placeholder"></div>
+<div id="comment_form" class="commentform">
+    <a name="commentform"></a>
+    <div id="divCommentShow"></div>
+    <div id="comment_nav"><span id="span_refresh_tips"></span><a href="javascript:void(0);" onclick="return RefreshCommentList();" id="lnk_RefreshComments" runat="server" clientidmode="Static">刷新评论</a><a href="#" onclick="return RefreshPage();">刷新页面</a><a href="#top">返回顶部</a></div>
+    <div id="comment_form_container" style="visibility: visible;"><div class="login_tips">
+    登录后才能查看或发表评论，立即 <a rel="nofollow" href="javascript:void(0);" class="underline" onclick="return account.login('!comments');">登录</a> 或者
+    <a href="https://www.cnblogs.com/">逛逛</a> 博客园首页
+</div>
+</div>
+    <div class="ad_text_commentbox" id="ad_text_under_commentbox"></div>
+    <div id="ad_t2" style="display: block;"><a href="https://brands.cnblogs.com/huawei" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-华为专区')">【推荐】资料合集 | HarmonyOS从入门到大神学习资料下载合集</a><br><a href="http://www.uccpsoft.com/index.htm" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-ucancode')">【推荐】大型组态、工控、仿真、CAD\GIS 50万行VC++源码免费下载!</a><br><a href="https://www.aliyun.com/activity/daily/bestoffer?userCode=swh7dvlt" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-阿里云-cps')">【推荐】阿里云爆品销量榜单出炉，精选爆款产品低至0.55折</a><br><a href="http://www.moojnn.com/?source=bokeyuan" target="_blank" onclick="ga('send', 'event', 'Link', 'click', 'T2-魔镜')">【推荐】限时秒杀！国云大数据魔镜，企业级云分析平台</a><br></div>
+    <div id="opt_under_post"></div>
+    <div id="cnblogs_c1" class="under-post-card" style="display: block;">
+        <div id="div-gpt-ad-1592365906576-0" style="width: 300px; height: 250px;" data-google-query-id="COiXor--hfECFRMAKgodq9wO-Q"><div id="google_ads_iframe_/1090369/C1_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C1_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C1_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="1" data-load-complete="true" width="300" height="250" frameborder="0"></iframe></div></div>
+    </div>
+    <div id="under_post_card1"><div class="under-post-card"><b>园子动态</b>：<br>· <a href="https://www.cnblogs.com/cmt/p/14585828.html" target="_blank">致园友们的一封检讨书：都是我们的错</a><br>· <a href="https://www.cnblogs.com/cmt/p/14595262.html" target="_blank">数据库实例 CPU 100% 引发全站故障</a><br>· <a href="https://www.cnblogs.com/cmt/p/14217355.html" target="_blank">发起一个开源项目：博客引擎 fluss</a><br></div></div>
+    <div id="cnblogs_c2" class="under-post-card" style="display: block;">
+        <div id="div-gpt-ad-1592366332455-0" style="width: 468px; height: 60px;" data-google-query-id="COmXor--hfECFRMAKgodq9wO-Q"><div id="google_ads_iframe_/1090369/C2_0__container__" style="border: 0pt none;"><iframe id="google_ads_iframe_/1090369/C2_0" title="3rd party ad content" name="google_ads_iframe_/1090369/C2_0" scrolling="no" marginwidth="0" marginheight="0" style="border: 0px none; vertical-align: bottom;" srcdoc="" data-google-container-id="2" data-load-complete="true" width="468" height="60" frameborder="0"></iframe></div></div>
+    </div>
+    <div id="under_post_card2"><div class="itnews under-post-card">
+    <b>最新新闻</b>：
+    <br>
+ ·          <a href="https://news.cnblogs.com/n/695483/" target="_blank">争夺00后社交 QQ、B站、快手谁能赢？</a>
+        <br>
+ ·          <a href="https://news.cnblogs.com/n/695482/" target="_blank">因负面缠身！消息称特斯拉5月中国市场订单量近乎腰斩</a>
+        <br>
+ ·          <a href="https://news.cnblogs.com/n/695481/" target="_blank">字节跳动也要造车？“字节汽车”商标已被受让</a>
+        <br>
+ ·          <a href="https://news.cnblogs.com/n/695480/" target="_blank">取代安卓！华为HarmonyOS 2上手：深度优化 更流畅了</a>
+        <br>
+ ·          <a href="https://news.cnblogs.com/n/695479/" target="_blank">马斯克遭黑客组织公开威胁：因其“不断挑衅”加密货币</a>
+        <br>
+    » <a href="https://news.cnblogs.com/" title="IT 新闻" target="_blank">更多新闻...</a>
+</div></div>
+    <div id="HistoryToday" class="under-post-card"></div>
+    <script type="text/javascript">
+       var commentManager = new blogCommentManager();
+       commentManager.renderComments(0);
+       fixPostBody();
+       deliverBigBanner();
+setTimeout(function() { incrementViewCount(cb_entryId); }, 50);       deliverT2();
+       deliverC1C2();
+       loadNewsAndKb();
+       loadBlogSignature();
+LoadPostCategoriesTags(cb_blogId, cb_entryId);       LoadPostInfoBlock(cb_blogId, cb_entryId, cb_blogApp, cb_blogUserGuid);
+       GetPrevNextPost(cb_entryId, cb_blogId, cb_entryCreatedDate, cb_postType);
+       loadOptUnderPost();
+       GetHistoryToday(cb_blogId, cb_blogApp, cb_entryCreatedDate);
+    </script>
+</div>
+
+	</div><!--end: forFlow -->
+	</div><!--end: mainContent 主体内容容器-->
+	<div id="sideBar">
+		<div id="sideBarMain">
+			<div id="sidebar_news" class="newsItem"><!--done-->
+<h3 class="catListTitle">公告</h3>
+
+<div id="blog-news"><div class="container">    <div class="menu-wrap optiscroll is-enabled has-vtrack" id="menuWrap" style=""><div class=" optiscroll-content" style="right: -15px; bottom: -15px;">        <nav class="menu">            <!-- 个人简介 -->            <div class="introduce-box">                <div class="introduce-head">                    <div class="introduce-via" id="menuBlogAvatar"><img src="Java%20Web(%E4%B8%80)%20Servlet%E8%AF%A6%E8%A7%A3%EF%BC%81%EF%BC%81%20-%20%E6%9C%89%E6%A2%A6%E6%83%B3%E7%9A%84%E8%80%81%E7%8E%8B%20-%20%E5%8D%9A%E5%AE%A2%E5%9B%AD_files/o_20072903030020200729110232784.png"></div>                </div>                <div id="introduce">
+        昵称：
+        <a href="https://home.cnblogs.com/u/whgk/">
+            有梦想的老王
+        </a>
+        <br>
+        园龄：
+        <a href="https://home.cnblogs.com/u/whgk/" title="入园时间：2016-01-06">
+            5年5个月
+        </a>
+        <br>
+        粉丝：
+        <a href="https://home.cnblogs.com/u/whgk/followers/">
+            3462
+        </a>
+        <br>
+        关注：
+        <a href="https://home.cnblogs.com/u/whgk/followees/">
+            14
+        </a>
+        <div id="p_b_follow">
+<a href="javascript:void(0)" onclick="follow('96c1a905-47b4-e511-9fc1-ac853d9f53cc')">+加关注</a></div>
+        
+    </div>            </div>            <!-- 导航 -->            <div class="nav-title"></div>            <div class="icon-list">                <ul id="m-nav-list">                <li><a href="https://www.cnblogs.com/whgk/" target="_self"><i class="iconfont icon-homepage_fill"></i>首页</a></li><li><a href="https://msg.cnblogs.com/send/whgk" target="_blank"><i class="iconfont icon-zhifeiji"></i>联系</a></li><li><a href="javascript:void(0)" onclick="$('#blog_nav_rss').trigger('click');" data-rss="https://www.cnblogs.com/whgk/rss/"><i class="iconfont icon-qinmifu"></i>订阅</a></li><li><a href="https://i.cnblogs.com/" target="_blank"><i class="iconfont icon-setup_fill"></i>管理</a></li></ul>            </div>            <!-- 日历 -->            <span id="calendar-box"></span>            <!-- 找找看 -->            <div class="m-list-title"><span>找找看</span></div>            <div class="m-icon-list" id="sb-sidebarSearchBox"></div>            <!-- 积分与排名 -->            <div class="m-list-title" style="display: block;"><span>积分排名<span class="iconfont icon-select m-list-title-select"></span></span></div>            <div class="m-icon-list" id="sb-sidebarScorerank"><div><ul><li><a href="javascript:void(0);"><span class="iconfont icon-collection_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>积分 -	
+293348</a></li><li><a href="javascript:void(0);"><span class="iconfont icon-collection_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>排名 -	
+2170</a></li></ul></div></div>            <!-- 最新随笔 -->            <div class="m-list-title"><span>最新随笔<span class="iconfont icon-select m-list-title-select"></span></span></div>            <div class="m-icon-list" id="sb-sidebarRecentposts"></div>            <!-- 我的标签 -->            <div class="m-list-title"><span>我的标签<span class="iconfont icon-select m-list-title-select"></span></span></div>            <div class="m-icon-list" id="sb-toptags"></div>            <!-- 随笔分类 -->            <div class="m-list-title" style="display: block;"><span>随笔分类<span class="iconfont icon-select m-list-title-select"></span></span></div>            <div class="m-icon-list" id="sb-classify"><div><ul><li><a href="https://www.cnblogs.com/whgk/category/1872210.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>ES(1)</a></li><li><a href="https://www.cnblogs.com/whgk/category/910622.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>hibernate(9)</a></li><li><a href="https://www.cnblogs.com/whgk/category/947929.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Java Web(14)</a></li><li><a href="https://www.cnblogs.com/whgk/category/905001.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>JavaSE(8)</a></li><li><a href="https://www.cnblogs.com/whgk/category/909062.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>JavaSE集合的深入。(7)</a></li><li><a href="https://www.cnblogs.com/whgk/category/1665093.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Java进阶专题(28)</a></li><li><a href="https://www.cnblogs.com/whgk/category/1027941.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>maven(2)</a></li><li><a href="https://www.cnblogs.com/whgk/category/981571.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Mybatis(7)</a></li><li><a href="https://www.cnblogs.com/whgk/category/916860.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>MySQL相关(13)</a></li><li><a href="https://www.cnblogs.com/whgk/category/972483.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>spring(4)</a></li><li><a href="https://www.cnblogs.com/whgk/category/1812842.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>springBoot(2)</a></li><li><a href="https://www.cnblogs.com/whgk/category/1032868.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>springmvc(5)</a></li><li><a href="https://www.cnblogs.com/whgk/category/964133.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>struts2(6)</a></li><li><a href="https://www.cnblogs.com/whgk/category/1948555.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>大数据相关(2)</a></li><li><a href="https://www.cnblogs.com/whgk/category/1872211.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>分布式相关(1)</a></li><li><a href="https://www.cnblogs.com/whgk/category/910604.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>复盘(4)</a></li><li><a href="https://www.cnblogs.com/whgk/category/904827.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>计算机网路基础(8)</a></li><li><a href="https://www.cnblogs.com/whgk/category/1026949.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>前端相关(4)</a></li><li><a href="https://www.cnblogs.com/whgk/category/919703.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>深入理解Java虚拟机(1)</a></li><li><a href="https://www.cnblogs.com/whgk/category/968878.html" rel="" target=""><span class="iconfont icon-marketing_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>数据结构(java)(2)</a></li></ul></div></div>            <!-- 文章分类 -->            <div class="m-list-title"><span>文章分类<span class="iconfont icon-select m-list-title-select"></span></span></div>            <div class="m-icon-list" id="sb-ArticleCategory"></div>            <!-- 阅读排行 -->            <div class="m-list-title" style="display: block;"><span>阅读排行<span class="iconfont icon-select m-list-title-select"></span></span></div>            <div class="m-icon-list" id="sb-topview"><div><ul><li><a href="https://www.cnblogs.com/whgk/p/7112560.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>maven(一) maven到底是个啥玩意~(415714)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6399262.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Java Web(一) Servlet详解！！(212998)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6179612.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>MySQL(五) MySQL中的索引详讲(99252)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6474396.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Java Web(十一) 分页功能的实现(94034)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6589920.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>数据结构(一) 单链表的实现-JAVA(92571)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6149009.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>MySQL(三) 数据库表的查询操作【重要】(60398)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6122036.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Java中反射机制详解(54272)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6435300.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Java Web(八) MVC和三层架构(51705)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6427759.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Java Web(五) JSP详解(四大作用域九大内置对象等)(44980)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6071617.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>hashcode详解(43818)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6437643.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Java Web(九) 用户管理系统(37499)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6422391.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Java Web(三) 会话机制，Cookie和Session详解(37151)</a></li><li><a href="https://www.cnblogs.com/whgk/p/7140638.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Mybatis(七) mybatis的逆向工程的配置详解(35799)</a></li><li><a href="https://www.cnblogs.com/whgk/p/7106567.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>easyui(一) 初始easyui(32219)</a></li><li><a href="https://www.cnblogs.com/whgk/p/7191152.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>springmvc(四) springmvc的数据校验的实现(31324)</a></li><li><a href="https://www.cnblogs.com/whgk/p/7121336.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>maven(二) maven项目构建ssh工程(父工程与子模块的拆分与聚合)(30577)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6074930.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>hibernate(一) 第一个hibernate工程(30386)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6412475.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Java Web(二) Servlet中response、request乱码问题解决(28829)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6135591.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>hibernate(六) cascade(级联)和inverse关系详解(28620)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6128395.html"><span class="iconfont icon-browse_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>hibernate(五) hibernate一对一关系映射详解(26913)</a></li></ul></div></div>            <!-- 推荐排行 -->            <div class="m-list-title" style="display: block;"><span>推荐排行<span class="iconfont icon-select m-list-title-select"></span></span></div>            <div class="m-icon-list" id="sb-topDiggPosts"><div><ul><li><a href="https://www.cnblogs.com/whgk/p/7112560.html"><span class="iconfont icon-like_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>maven(一) maven到底是个啥玩意~(276)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6399262.html"><span class="iconfont icon-like_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Java Web(一) Servlet详解！！(138)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6071617.html"><span class="iconfont icon-like_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>hashcode详解(48)</a></li><li><a href="https://www.cnblogs.com/whgk/p/7121336.html"><span class="iconfont icon-like_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>maven(二) maven项目构建ssh工程(父工程与子模块的拆分与聚合)(45)</a></li><li><a href="https://www.cnblogs.com/whgk/p/6422391.html"><span class="iconfont icon-like_fill" style="color: #888;font-size: 14px;margin-right: 5px;"></span>Java Web(三) 会话机制，Cookie和Session详解(34)</a></li></ul></div></div>            <!-- 最新评论 -->            <div class="m-list-title" style="display: block;"><span>最新评论<span class="iconfont icon-select m-list-title-select"></span></span></div>            <div class="m-icon-list" id="sb-recentComments"><div><ul><li><a href="https://www.cnblogs.com/whgk/p/14138826.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:道阻且长，行则将至！2020年终总结！</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">@caochangkai 不是呢，面上了，但没去讯飞了 ，想了想工资比南京还是少不少，岗位也不是太满意，就去了南京运满满，这边技术氛围可以，大佬比较多，准备好好再沉淀两年，再去讯飞面架构岗位...</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--有梦想的老王</div></li><li><a href="https://www.cnblogs.com/whgk/p/14138826.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:道阻且长，行则将至！2020年终总结！</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">你好 是在科大讯飞吗
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--caochangkai</div></li><li><a href="https://www.cnblogs.com/whgk/p/6437643.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java Web(九) 用户管理系统</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">能重新传一下源码吗，谢谢
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--回不去的我们</div></li><li><a href="https://www.cnblogs.com/whgk/p/6437643.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java Web(九) 用户管理系统</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">项目不存在呀
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--王一小哥哥</div></li><li><a href="https://www.cnblogs.com/whgk/p/14138826.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:道阻且长，行则将至！2020年终总结！</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">未来还长，一切可期
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--康纳阿部多瑞</div></li><li><a href="https://www.cnblogs.com/whgk/p/6542505.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:struts2(一) struts2入门</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">我这个菜鸟都能看懂，太好的文章了，通俗易懂
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--好名字都被人取了去</div></li><li><a href="https://www.cnblogs.com/whgk/p/14138826.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:道阻且长，行则将至！2020年终总结！</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">大佬加油，我已经看了你文章两年了，质量是真的可以
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--AllWereNothing</div></li><li><a href="https://www.cnblogs.com/whgk/p/14138826.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:道阻且长，行则将至！2020年终总结！</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">老王加油，你的博客基于我在学习方面，生活方面有很多启发，我真的很喜欢看你博客，有深度有个人理解也很亲民，冲冲冲
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--七柒不会打野</div></li><li><a href="https://www.cnblogs.com/whgk/p/14616247.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Nacos 2.0 正式发布，性能提升了 10 倍！！</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">@yitter 确实 现在的人都喜欢自己搞一套，如果是为了研究技术还是可以的，可以多研究研究新一代的微服务运行时dapr这种的，感觉这种才是微服务发展的趋势...</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--落叶子</div></li><li><a href="https://www.cnblogs.com/whgk/p/14616247.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Nacos 2.0 正式发布，性能提升了 10 倍！！</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">云原生就支持服务发现、DNS服务，没必要再搞一套。Java并不擅长做这些功能。
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--yitter</div></li><li><a href="https://www.cnblogs.com/whgk/p/13275713.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java进阶专题(七) 设计模式之委派模式与策略模式</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">@ami..+ 就是支付策略呀...</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--有梦想的老王</div></li><li><a href="https://www.cnblogs.com/whgk/p/13275713.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java进阶专题(七) 设计模式之委派模式与策略模式</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">PayStrategy？
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--ami..+</div></li><li><a href="https://www.cnblogs.com/whgk/p/12611267.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java进阶专题(五) 设计模式之单例模式</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">@Real苏先生 哈哈 都是手敲的 没注意就敲错...</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--有梦想的老王</div></li><li><a href="https://www.cnblogs.com/whgk/p/12611267.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java进阶专题(五) 设计模式之单例模式</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">博主，错别字有点多哦
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--Real苏先生</div></li><li><a href="https://www.cnblogs.com/whgk/p/12465380.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java进阶专题(三) 软件架构设计原则（下）</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">里式替换原则感觉讲的有点听不懂。 copy来的=》里氏替换原则通俗地讲就是：子类可以扩展父类的功能，但是不能父类原有的功能。也就是说子类继承父类的时候，除添加新的方法完成新增功能外，尽量不要重写父类的...</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--Sugz</div></li><li><a href="https://www.cnblogs.com/whgk/p/12448925.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java进阶专题(一) 前言</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">第一次来，情况差不多，谢谢博主整理的资料。
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--Sugz</div></li><li><a href="https://www.cnblogs.com/whgk/p/6718979.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Mybatis(三) 映射文件详解</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">最近在学mybaits，博主这写的不错，学习了
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--huazai_zai</div></li><li><a href="https://www.cnblogs.com/whgk/p/14586249.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java进阶专题(二十六)  将近2万字的Dubbo原理解析，彻底搞懂dubbo</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">hhh
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--sunnylhy</div></li><li><a href="https://www.cnblogs.com/whgk/p/14586249.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java进阶专题(二十六)  将近2万字的Dubbo原理解析，彻底搞懂dubbo</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">哈哈
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--sunnylhy</div></li><li><a href="https://www.cnblogs.com/whgk/p/14586249.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java进阶专题(二十六)  将近2万字的Dubbo原理解析，彻底搞懂dubbo</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">哈哈哈哈哈哈
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--sunnylhy</div></li><li><a href="https://www.cnblogs.com/whgk/p/7112560.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:maven(一) maven到底是个啥玩意~</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">写的真好
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--方格啦啦啦</div></li><li><a href="https://www.cnblogs.com/whgk/p/14542608.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:有必要了解的大数据知识(一) Hadoop</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">很棒的文章
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--阿信8888</div></li><li><a href="https://www.cnblogs.com/whgk/p/14542608.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:有必要了解的大数据知识(一) Hadoop</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">写的很好
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--阿信8888</div></li><li><a href="https://www.cnblogs.com/whgk/p/6692746.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Mybatis(一) mybatis入门</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">天呐真的是及时雨   今天刚好开始学这门课   听起来有点懵逼  这么一看就真的是很绝了太大的帮助了
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--今天也很困</div></li><li><a href="https://www.cnblogs.com/whgk/p/6131285.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:MySQL(一) 数据表数据库的基本操作</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">太适合我们这种MySQL学的不是很行的人了  不要断更了  冲冲
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--今天也很困</div></li><li><a href="https://www.cnblogs.com/whgk/p/6437643.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java Web(九) 用户管理系统</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">@有梦想的老王 哈哈 你的源碼還在嗎...</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--wbssssssss</div></li><li><a href="https://www.cnblogs.com/whgk/p/6437643.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java Web(九) 用户管理系统</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">@wbssssssss 兄弟抱歉哈,时间太久了,网盘都被删了...</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--有梦想的老王</div></li><li><a href="https://www.cnblogs.com/whgk/p/6071617.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:hashcode详解</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">@星光下的回眸 equal比较内存地址，内存地址相等的说明这本身就是一个对象，那它算出来的hashcode就是相同的，所以在hash表中的位置是一个...</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--不要摘树叶</div></li><li><a href="https://www.cnblogs.com/whgk/p/6437643.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java Web(九) 用户管理系统</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">@有梦想的老王 期待你的回覆...</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--wbssssssss</div></li><li><a href="https://www.cnblogs.com/whgk/p/6437643.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java Web(九) 用户管理系统</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">你好，正在學習Java Web，你的博文對我幫助很大，感謝 正在學習Java Web，在cookie這塊有點困難， 能不能看一下你Java Web項目《用戶管理系統》的源碼。 如果可以請聯繫我，微信：...</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--wbssssssss</div></li><li><a href="https://www.cnblogs.com/whgk/p/11066798.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:MySQL数据库详解（二）执行SQL更新时,其底层经历了哪些操作?</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">为什么要WAL呢？写WAL不也有写磁盘的开销吗？如果缓存一点数据再顺序写，那是不是又会有丢失的风险
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--TXYH1</div></li><li><a href="https://www.cnblogs.com/whgk/p/14389642.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java进阶专题(二十五) 分布式锁实现业务幂等</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">问一下你这主题咋搞得？？
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--china_yang</div></li><li><a href="https://www.cnblogs.com/whgk/p/6437643.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java Web(九) 用户管理系统</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">@飞上天de橘子 哈哈，时间过的真的好快，现在看看之前的博客，还能清晰记得当年努力的影子，目前我在一个电商公司做社群相关的业务。这些年也没停止学习过，还在为一线大厂梦努力着，加油！...</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--有梦想的老王</div></li><li><a href="https://www.cnblogs.com/whgk/p/6437643.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java Web(九) 用户管理系统</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">强啊博主。这几年过不，不知道博主目前是做什么工作呀。以你为榜样
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--飞上天de橘子</div></li><li><a href="https://www.cnblogs.com/whgk/p/14185382.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java进阶专题(二十) 消息中间件架构体系（2）-- RabbitMQ研究</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">强
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--leftw</div></li><li><a href="https://www.cnblogs.com/whgk/p/7112560.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:maven(一) maven到底是个啥玩意~</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">写的很清晰明白。
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--石沐炎</div></li><li><a href="https://www.cnblogs.com/whgk/p/6399262.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java Web(一) Servlet详解！！</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">感谢
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--由南到北</div></li><li><a href="https://www.cnblogs.com/whgk/p/6422391.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java Web(三) 会话机制，Cookie和Session详解</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">讲得很详细！！！
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--wsjtwmy</div></li><li><a href="https://www.cnblogs.com/whgk/p/6721935.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Mybatis(四) 高级映射，一对一，一对多，多对多映射</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">是得构造，只是pojo里可以含有引用类型，如果是用resultType的话pojo里就必须把引用类型全部拆成基本数据类型才行
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--nzlzyzh</div></li><li><a href="https://www.cnblogs.com/whgk/p/6412475.html"><span class="iconfont icon-pinglunzu" style="color: #888;font-size: 15px;margin-right: 5px;"></span>Re:Java Web(二) Servlet中response、request乱码问题解决</a><div style="padding-left: 1.5em;color: #777;position: relative;top: -5px;">博主这个系列的文章真的很好，尤其是第一篇讲servlet，但第2篇确实有点逊色了，解决办法到时候对了（但里面有把utf-8写成uft-8，也怪我当时是复制的，没仔细看）
+</div><div style="text-align: right;color: #444;position: relative;top: -10px;">--努力的憨包</div></li></ul></div></div>            <!-- 文章档案 -->            <div class="m-list-title"><span>文章档案<span class="iconfont icon-select m-list-title-select"></span></span></div>            <div class="m-icon-list" id="sb-articlearchive"></div>            <!-- 随笔档案 -->            <div class="m-list-title"><span>随笔档案<span class="iconfont icon-select m-list-title-select"></span></span></div>            <div class="m-icon-list" id="sb-record"></div>            <!-- 自定义列表 -->            <span id="menuCustomList"></span>        </nav>        <button class="close-button" id="close-button">Close Menu</button>        <div class="morph-shape" id="morph-shape" data-morph-open="M-7.312,0H15c0,0,66,113.339,66,399.5C81,664.006,15,800,15,800H-7.312V0z;M-7.312,0H100c0,0,0,113.839,0,400c0,264.506,0,400,0,400H-7.312V0z">            <svg xmlns="http://www.w3.org/2000/svg" width="100%" height="100%" viewBox="0 0 100 800" preserveAspectRatio="none">                <path d="M-7.312,0H0c0,0,0,113.839,0,400c0,264.506,0,400,0,400h-7.312V0z"></path>            <desc>Created with Snap</desc><defs></defs></svg>        </div>    </div><div class="optiscroll-v"><b class="optiscroll-vtrack" style="height: 10.3124%; transform: translate(0%, 100.457%);"></b></div><div class="optiscroll-h"><b class="optiscroll-htrack"></b></div></div>    <button class="menu-button menu-button-scroll" id="open-button"></button>    <div class="content-wrap" id="content-wrap" style="display: none;"></div><!-- /content-wrap --></div><div class="main-header" style="height: 40vh; background: rgb(34, 34, 34) url(&quot;https://cdn.jsdelivr.net/gh/BNDong/Cnblogs-Theme-SimpleMemory@master/img/webp/nothome_top_bg.webp&quot;) no-repeat scroll center center / cover;">    <canvas id="notHomeTopCanvas" width="1393" height="261"></canvas>    <div class="vertical">        <div class="main-header-content inner" style="max-width: 100vw;">            <h1 class="page-title" id="homeTopTitle" style="display: none;">有梦想的老王</h1>            <h2 class="page-description" id="hitokoto"></h2>            <h3 class="page-author" id="hitokotoAuthor"></h3>            <h1 class="sb-title" id="sbTitle">
+    Java Web(一) Servlet详解！！
+    
+
+
+
+</h1>            <p class="article-info" id="articleInfo"><p class="article-info-text"><span class="postMeta"><i class="iconfont icon-time1"></i>发表于 2017-02-17 15:26<i class="iconfont icon-browse"></i>阅读：213005<i class="iconfont icon-interactive"></i>评论：35<i class="iconfont icon-hot"></i>推荐：138</span></p><a href="https://www.cnblogs.com/whgk/category/947929.html" target="_blank"><span class="article-info-tag article-tag-class-color">Java Web</span></a></p>        </div>    </div>    <a class="scroll-down" href="javascript:void(0);" data-offset="-45" style="display: none;">        <span class="hidden">Scroll Down</span>        <i class="scroll-down-icon iconfont icon-fanhui"></i>    </a></div><div id="loading" style="display: none;"></div><div id="bottomProgressBar"><div id="top-progress-bar" style="position: relative; top: 0px; left: 0px; right: 0px; background-color: rgb(119, 182, 255); height: 2px; width: 2%; transition: width 0.2s ease 0s, opacity 0.6s ease 0s; opacity: 1;"></div></div><div id="rightMenu"><div id="rightDiggit" clickflg="false" onclick="votePost(6399262,'Digg')"><span class="rightMenuSpan rightDiggitSpan">138</span><i class="iconfont icon-zan1"></i></div><div id="rightBuryit" clickflg="false" onclick="votePost(6399262,'Bury')"><span class="rightMenuSpan rightBuryitSpan" style="display: none; opacity: 0.9;">0</span><i class="iconfont icon-buzan" style="transform: rotate(0deg); transform-origin: 50% 50% 0px;"></i></div><div id="attention" onclick="follow('96c1a905-47b4-e511-9fc1-ac853d9f53cc')" clickflg="false"><span class="rightMenuSpan attentionSpan" style="display: none; opacity: 0.9;">关注</span><i class="iconfont icon-dianzan" style="transform: rotate(0deg); transform-origin: 50% 50% 0px;"></i></div><div id="toUpDown" data="up"><span class="rightMenuSpan toUpDownSpan" style="display: none; opacity: 0.9;">返回顶部</span><div id="toUpDownI" style="transform: rotate(0deg); transform-origin: 50% 50% 0px;"><i class="iconfont icon-zhiding"></i></div></div></div>
+    <script type="text/javascript">window['__document_write_ajax_callbacks__']['4']();</script><script type="text/javascript">window['__document_write_ajax_callbacks__']['1']();</script>
+<script type="text/javascript">window['__document_write_ajax_callbacks__']['5']();</script><script type="text/javascript">window['__document_write_ajax_callbacks__']['6']();</script><script>window['__document_write_ajax_callbacks__']['2']();</script>
+    <div id="profile_block">
+        昵称：
+        <a href="https://home.cnblogs.com/u/whgk/">
+            有梦想的老王
+        </a>
+        <br>
+        园龄：
+        <a href="https://home.cnblogs.com/u/whgk/" title="入园时间：2016-01-06">
+            5年5个月
+        </a>
+        <br>
+        粉丝：
+        <a href="https://home.cnblogs.com/u/whgk/followers/">
+            3462
+        </a>
+        <br>
+        关注：
+        <a href="https://home.cnblogs.com/u/whgk/followees/">
+            14
+        </a>
+        <div id="p_b_follow">
+<a href="javascript:void(0)" onclick="follow('96c1a905-47b4-e511-9fc1-ac853d9f53cc')">+加关注</a></div>
+        <script type="text/javascript">window['__document_write_ajax_callbacks__']['7']();</script><script>window['__document_write_ajax_callbacks__']['3']();</script>
+    </div>
+</div>
+
+</div>
+<div id="sidebar_c3"></div>
+			<div id="blog-calendar" style="display:none"></div><script>loadBlogDefaultCalendar();</script>			
+			<div id="leftcontentcontainer">
+				<div id="blog-sidecolumn"><!-- 搜索 -->
+<div id="sidebar_search" class="sidebar-block">
+    
+</div>
+
+<!-- 常用链接 -->
+<div id="sidebar_shortcut" class="sidebar-block"><div class="catListLink">
+<h3 class="catListTitle">
+常用链接
+</h3>
+<ul>
+    
+<li><a href="https://www.cnblogs.com/whgk/p/" title="我的博客的随笔列表">我的随笔</a></li>
+<li><a href="https://www.cnblogs.com/whgk/MyComments.html" title="我的发表过的评论列表">我的评论</a></li>
+<li><a href="https://www.cnblogs.com/whgk/OtherPosts.html" title="我评论过的随笔列表">我的参与</a></li>
+<li><a href="https://www.cnblogs.com/whgk/RecentComments.html" title="我的博客的评论列表">最新评论</a></li>
+<li><a href="https://www.cnblogs.com/whgk/tag/" title="我的博客的标签列表">我的标签</a></li>
+
+</ul>
+</div>
+
+</div>
+
+<!-- 最新随笔 -->
+
+
+<!-- 我的标签 -->
+<div id="sidebar_toptags" class="sidebar-block"></div>
+
+<!-- 积分与排名 -->
+<div id="sidebar_scorerank" class="sidebar-block"><div class="catListBlogRank">
+<h3 class="catListTitle">积分与排名</h3>
+<ul>
+	<li class="liScore">
+		积分 -	
+293348
+	</li>
+	<li class="liRank">
+		排名 -	
+2170
+	</li>
+</ul>
+</div>
+
+
+
+</div>
+
+<!-- 随笔分类、随笔档案、文章分类、新闻分类、相册、链接 -->
+<div id="sidebar_categories">
+
+    <div id="sidebar_postcategory" class="catListPostCategory sidebar-block">
+        <h3 class="catListTitle">
+            
+随笔分类
+<span style="font-size:11px;font-weight:normal">(128)</span>
+
+
+        </h3>
+
+        <ul>
+
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/1872210.html" rel="" target="">
+    ES(1)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/910622.html" rel="" target="">
+    hibernate(9)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/947929.html" rel="" target="">
+    Java Web(14)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/905001.html" rel="" target="">
+    JavaSE(8)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/909062.html" rel="" target="">
+    JavaSE集合的深入。(7)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/1665093.html" rel="" target="">
+    Java进阶专题(28)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/1027941.html" rel="" target="">
+    maven(2)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/981571.html" rel="" target="">
+    Mybatis(7)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/916860.html" rel="" target="">
+    MySQL相关(13)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/972483.html" rel="" target="">
+    spring(4)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/1812842.html" rel="" target="">
+    springBoot(2)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/1032868.html" rel="" target="">
+    springmvc(5)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/964133.html" rel="" target="">
+    struts2(6)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/1948555.html" rel="" target="">
+    大数据相关(2)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/1872211.html" rel="" target="">
+    分布式相关(1)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/910604.html" rel="" target="">
+    复盘(4)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/904827.html" rel="" target="">
+    计算机网路基础(8)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/1026949.html" rel="" target="">
+    前端相关(4)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/919703.html" rel="" target="">
+    深入理解Java虚拟机(1)
+</a>
+ 
+
+                </li>                
+                <li data-category-list-item-visible="true" style="display: block">
+                    
+<a href="https://www.cnblogs.com/whgk/category/968878.html" rel="" target="">
+    数据结构(java)(2)
+</a>
+ 
+
+                </li>                
+            
+        </ul>
+
+
+    </div>    
+</div>
+
+<!-- 最新评论 -->
+<div id="sidebar_recentcomments" class="sidebar-block"><div class="catListComment">
+<h3 class="catListTitle">最新评论</h3>
+
+	<div class="RecentCommentBlock">
+        <ul>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14138826.html">1. Re:道阻且长，行则将至！2020年终总结！</a></li>
+                    <li class="recent_comment_body">@caochangkai 不是呢，面上了，但没去讯飞了 ，想了想工资比南京还是少不少，岗位也不是太满意，就去了南京运满满，这边技术氛围可以，大佬比较多，准备好好再沉淀两年，再去讯飞面架构岗位...</li>
+                    <li class="recent_comment_author">--有梦想的老王</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14138826.html">2. Re:道阻且长，行则将至！2020年终总结！</a></li>
+                    <li class="recent_comment_body"><p>你好 是在科大讯飞吗</p>
+</li>
+                    <li class="recent_comment_author">--caochangkai</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6437643.html">3. Re:Java Web(九) 用户管理系统</a></li>
+                    <li class="recent_comment_body"><p>能重新传一下源码吗，谢谢</p>
+</li>
+                    <li class="recent_comment_author">--回不去的我们</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6437643.html">4. Re:Java Web(九) 用户管理系统</a></li>
+                    <li class="recent_comment_body"><p>项目不存在呀</p>
+</li>
+                    <li class="recent_comment_author">--王一小哥哥</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14138826.html">5. Re:道阻且长，行则将至！2020年终总结！</a></li>
+                    <li class="recent_comment_body"><p>未来还长，一切可期</p>
+</li>
+                    <li class="recent_comment_author">--康纳阿部多瑞</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6542505.html">6. Re:struts2(一) struts2入门</a></li>
+                    <li class="recent_comment_body"><p>我这个菜鸟都能看懂，太好的文章了，通俗易懂</p>
+</li>
+                    <li class="recent_comment_author">--好名字都被人取了去</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14138826.html">7. Re:道阻且长，行则将至！2020年终总结！</a></li>
+                    <li class="recent_comment_body"><p>大佬加油，我已经看了你文章两年了，质量是真的可以</p>
+</li>
+                    <li class="recent_comment_author">--AllWereNothing</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14138826.html">8. Re:道阻且长，行则将至！2020年终总结！</a></li>
+                    <li class="recent_comment_body"><p>老王加油，你的博客基于我在学习方面，生活方面有很多启发，我真的很喜欢看你博客，有深度有个人理解也很亲民，冲冲冲</p>
+</li>
+                    <li class="recent_comment_author">--七柒不会打野</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14616247.html">9. Re:Nacos 2.0 正式发布，性能提升了 10 倍！！</a></li>
+                    <li class="recent_comment_body">@yitter 确实 现在的人都喜欢自己搞一套，如果是为了研究技术还是可以的，可以多研究研究新一代的微服务运行时dapr这种的，感觉这种才是微服务发展的趋势...</li>
+                    <li class="recent_comment_author">--落叶子</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14616247.html">10. Re:Nacos 2.0 正式发布，性能提升了 10 倍！！</a></li>
+                    <li class="recent_comment_body"><p>云原生就支持服务发现、DNS服务，没必要再搞一套。Java并不擅长做这些功能。</p>
+</li>
+                    <li class="recent_comment_author">--yitter</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/13275713.html">11. Re:Java进阶专题(七) 设计模式之委派模式与策略模式</a></li>
+                    <li class="recent_comment_body">@ami..+ 就是支付策略呀...</li>
+                    <li class="recent_comment_author">--有梦想的老王</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/13275713.html">12. Re:Java进阶专题(七) 设计模式之委派模式与策略模式</a></li>
+                    <li class="recent_comment_body"><p>PayStrategy？</p>
+</li>
+                    <li class="recent_comment_author">--ami..+</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/12611267.html">13. Re:Java进阶专题(五) 设计模式之单例模式</a></li>
+                    <li class="recent_comment_body">@Real苏先生 哈哈 都是手敲的 没注意就敲错...</li>
+                    <li class="recent_comment_author">--有梦想的老王</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/12611267.html">14. Re:Java进阶专题(五) 设计模式之单例模式</a></li>
+                    <li class="recent_comment_body"><p>博主，错别字有点多哦</p>
+</li>
+                    <li class="recent_comment_author">--Real苏先生</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/12465380.html">15. Re:Java进阶专题(三) 软件架构设计原则（下）</a></li>
+                    <li class="recent_comment_body">里式替换原则感觉讲的有点听不懂。 copy来的=》里氏替换原则通俗地讲就是：子类可以扩展父类的功能，但是不能父类原有的功能。也就是说子类继承父类的时候，除添加新的方法完成新增功能外，尽量不要重写父类的...</li>
+                    <li class="recent_comment_author">--Sugz</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/12448925.html">16. Re:Java进阶专题(一) 前言</a></li>
+                    <li class="recent_comment_body"><p>第一次来，情况差不多，谢谢博主整理的资料。</p>
+</li>
+                    <li class="recent_comment_author">--Sugz</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6718979.html">17. Re:Mybatis(三) 映射文件详解</a></li>
+                    <li class="recent_comment_body"><p>最近在学mybaits，博主这写的不错，学习了</p>
+</li>
+                    <li class="recent_comment_author">--huazai_zai</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14586249.html">18. Re:Java进阶专题(二十六)  将近2万字的Dubbo原理解析，彻底搞懂dubbo</a></li>
+                    <li class="recent_comment_body"><p>hhh</p>
+</li>
+                    <li class="recent_comment_author">--sunnylhy</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14586249.html">19. Re:Java进阶专题(二十六)  将近2万字的Dubbo原理解析，彻底搞懂dubbo</a></li>
+                    <li class="recent_comment_body"><p>哈哈</p>
+</li>
+                    <li class="recent_comment_author">--sunnylhy</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14586249.html">20. Re:Java进阶专题(二十六)  将近2万字的Dubbo原理解析，彻底搞懂dubbo</a></li>
+                    <li class="recent_comment_body"><p>哈哈哈哈哈哈</p>
+</li>
+                    <li class="recent_comment_author">--sunnylhy</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/7112560.html">21. Re:maven(一) maven到底是个啥玩意~</a></li>
+                    <li class="recent_comment_body"><p>写的真好</p>
+</li>
+                    <li class="recent_comment_author">--方格啦啦啦</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14542608.html">22. Re:有必要了解的大数据知识(一) Hadoop</a></li>
+                    <li class="recent_comment_body"><p>很棒的文章</p>
+</li>
+                    <li class="recent_comment_author">--阿信8888</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14542608.html">23. Re:有必要了解的大数据知识(一) Hadoop</a></li>
+                    <li class="recent_comment_body"><p>写的很好</p>
+</li>
+                    <li class="recent_comment_author">--阿信8888</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6692746.html">24. Re:Mybatis(一) mybatis入门</a></li>
+                    <li class="recent_comment_body"><p>天呐真的是及时雨   今天刚好开始学这门课   听起来有点懵逼  这么一看就真的是很绝了太大的帮助了</p>
+</li>
+                    <li class="recent_comment_author">--今天也很困</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6131285.html">25. Re:MySQL(一) 数据表数据库的基本操作</a></li>
+                    <li class="recent_comment_body"><p>太适合我们这种MySQL学的不是很行的人了  不要断更了  冲冲</p>
+</li>
+                    <li class="recent_comment_author">--今天也很困</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6437643.html">26. Re:Java Web(九) 用户管理系统</a></li>
+                    <li class="recent_comment_body">@有梦想的老王 哈哈 你的源碼還在嗎...</li>
+                    <li class="recent_comment_author">--wbssssssss</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6437643.html">27. Re:Java Web(九) 用户管理系统</a></li>
+                    <li class="recent_comment_body">@wbssssssss 兄弟抱歉哈,时间太久了,网盘都被删了...</li>
+                    <li class="recent_comment_author">--有梦想的老王</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6071617.html">28. Re:hashcode详解</a></li>
+                    <li class="recent_comment_body">@星光下的回眸 equal比较内存地址，内存地址相等的说明这本身就是一个对象，那它算出来的hashcode就是相同的，所以在hash表中的位置是一个...</li>
+                    <li class="recent_comment_author">--不要摘树叶</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6437643.html">29. Re:Java Web(九) 用户管理系统</a></li>
+                    <li class="recent_comment_body">@有梦想的老王 期待你的回覆...</li>
+                    <li class="recent_comment_author">--wbssssssss</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6437643.html">30. Re:Java Web(九) 用户管理系统</a></li>
+                    <li class="recent_comment_body">你好，正在學習Java Web，你的博文對我幫助很大，感謝 正在學習Java Web，在cookie這塊有點困難， 能不能看一下你Java Web項目《用戶管理系統》的源碼。 如果可以請聯繫我，微信：...</li>
+                    <li class="recent_comment_author">--wbssssssss</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/11066798.html">31. Re:MySQL数据库详解（二）执行SQL更新时,其底层经历了哪些操作?</a></li>
+                    <li class="recent_comment_body"><p>为什么要WAL呢？写WAL不也有写磁盘的开销吗？如果缓存一点数据再顺序写，那是不是又会有丢失的风险</p>
+</li>
+                    <li class="recent_comment_author">--TXYH1</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14389642.html">32. Re:Java进阶专题(二十五) 分布式锁实现业务幂等</a></li>
+                    <li class="recent_comment_body"><p>问一下你这主题咋搞得？？</p>
+</li>
+                    <li class="recent_comment_author">--china_yang</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6437643.html">33. Re:Java Web(九) 用户管理系统</a></li>
+                    <li class="recent_comment_body">@飞上天de橘子 哈哈，时间过的真的好快，现在看看之前的博客，还能清晰记得当年努力的影子，目前我在一个电商公司做社群相关的业务。这些年也没停止学习过，还在为一线大厂梦努力着，加油！...</li>
+                    <li class="recent_comment_author">--有梦想的老王</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6437643.html">34. Re:Java Web(九) 用户管理系统</a></li>
+                    <li class="recent_comment_body"><p>强啊博主。这几年过不，不知道博主目前是做什么工作呀。以你为榜样</p>
+</li>
+                    <li class="recent_comment_author">--飞上天de橘子</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/14185382.html">35. Re:Java进阶专题(二十) 消息中间件架构体系（2）-- RabbitMQ研究</a></li>
+                    <li class="recent_comment_body"><p>强</p>
+</li>
+                    <li class="recent_comment_author">--leftw</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/7112560.html">36. Re:maven(一) maven到底是个啥玩意~</a></li>
+                    <li class="recent_comment_body"><p>写的很清晰明白。</p>
+</li>
+                    <li class="recent_comment_author">--石沐炎</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6399262.html">37. Re:Java Web(一) Servlet详解！！</a></li>
+                    <li class="recent_comment_body"><p>感谢</p>
+</li>
+                    <li class="recent_comment_author">--由南到北</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6422391.html">38. Re:Java Web(三) 会话机制，Cookie和Session详解</a></li>
+                    <li class="recent_comment_body"><p>讲得很详细！！！</p>
+</li>
+                    <li class="recent_comment_author">--wsjtwmy</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6721935.html">39. Re:Mybatis(四) 高级映射，一对一，一对多，多对多映射</a></li>
+                    <li class="recent_comment_body"><p>是得构造，只是pojo里可以含有引用类型，如果是用resultType的话pojo里就必须把引用类型全部拆成基本数据类型才行</p>
+</li>
+                    <li class="recent_comment_author">--nzlzyzh</li>
+                    <li class="recent_comment_title"><a href="https://www.cnblogs.com/whgk/p/6412475.html">40. Re:Java Web(二) Servlet中response、request乱码问题解决</a></li>
+                    <li class="recent_comment_body"><p>博主这个系列的文章真的很好，尤其是第一篇讲servlet，但第2篇确实有点逊色了，解决办法到时候对了（但里面有把utf-8写成uft-8，也怪我当时是复制的，没仔细看）</p>
+</li>
+                    <li class="recent_comment_author">--努力的憨包</li>
+        </ul>
+    </div>
+</div>
+
+</div>
+
+
+<!-- 阅读排行榜 -->
+<div id="sidebar_topviewedposts" class="sidebar-block"><div class="catListView">
+<h3 class="catListTitle">阅读排行榜</h3>
+	<div id="TopViewPostsBlock">
+        <ul style="word-break:break-all">
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/7112560.html">
+                            1. maven(一) maven到底是个啥玩意~(415714)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6399262.html">
+                            2. Java Web(一) Servlet详解！！(212998)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6179612.html">
+                            3. MySQL(五) MySQL中的索引详讲(99252)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6474396.html">
+                            4. Java Web(十一) 分页功能的实现(94034)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6589920.html">
+                            5. 数据结构(一) 单链表的实现-JAVA(92571)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6149009.html">
+                            6. MySQL(三) 数据库表的查询操作【重要】(60398)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6122036.html">
+                            7. Java中反射机制详解(54272)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6435300.html">
+                            8. Java Web(八) MVC和三层架构(51705)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6427759.html">
+                            9. Java Web(五) JSP详解(四大作用域九大内置对象等)(44980)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6071617.html">
+                            10. hashcode详解(43818)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6437643.html">
+                            11. Java Web(九) 用户管理系统(37499)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6422391.html">
+                            12. Java Web(三) 会话机制，Cookie和Session详解(37151)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/7140638.html">
+                            13. Mybatis(七) mybatis的逆向工程的配置详解(35799)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/7106567.html">
+                            14. easyui(一) 初始easyui(32219)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/7191152.html">
+                            15. springmvc(四) springmvc的数据校验的实现(31324)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/7121336.html">
+                            16. maven(二) maven项目构建ssh工程(父工程与子模块的拆分与聚合)(30577)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6074930.html">
+                            17. hibernate(一) 第一个hibernate工程(30386)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6412475.html">
+                            18. Java Web(二) Servlet中response、request乱码问题解决(28829)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6135591.html">
+                            19. hibernate(六) cascade(级联)和inverse关系详解(28620)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6128395.html">
+                            20. hibernate(五) hibernate一对一关系映射详解(26913)
+                        </a>
+                    </li>
+        </ul>
+    </div>
+</div>
+
+</div>
+
+<!-- 评论排行榜 -->
+<div id="sidebar_topcommentedposts" class="sidebar-block"><div class="catListFeedback">
+<h3 class="catListTitle">评论排行榜</h3>
+	<div id="TopFeedbackPostsBlock">
+        <ul style="word-break:break-all">
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/7112560.html">
+                            1. maven(一) maven到底是个啥玩意~(67)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6399262.html">
+                            2. Java Web(一) Servlet详解！！(35)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6179612.html">
+                            3. MySQL(五) MySQL中的索引详讲(24)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6437643.html">
+                            4. Java Web(九) 用户管理系统(23)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6071617.html">
+                            5. hashcode详解(20)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6589920.html">
+                            6. 数据结构(一) 单链表的实现-JAVA(18)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/7152732.html">
+                            7. springmvc(一) springmvc框架原理分析和简单入门程序(16)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/7121336.html">
+                            8. maven(二) maven项目构建ssh工程(父工程与子模块的拆分与聚合)(13)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6474396.html">
+                            9. Java Web(十一) 分页功能的实现(13)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6536341.html">
+                            10. Java Web(十四) 编写MyBookStore项目的总结(12)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6412475.html">
+                            11. Java Web(二) Servlet中response、request乱码问题解决(12)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6135591.html">
+                            12. hibernate(六) cascade(级联)和inverse关系详解(12)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6131285.html">
+                            13. MySQL(一) 数据表数据库的基本操作(12)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/10984222.html">
+                            14. 过去和未来(11)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/10534622.html">
+                            15. 好久没来看看了~(11)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6422391.html">
+                            16. Java Web(三) 会话机制，Cookie和Session详解(11)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6149009.html">
+                            17. MySQL(三) 数据库表的查询操作【重要】(11)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6427759.html">
+                            18. Java Web(五) JSP详解(四大作用域九大内置对象等)(10)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/6079212.html">
+                            19. ArrayList源码分析(10)
+                        </a>
+                    </li>
+                    <li>
+                        <a href="https://www.cnblogs.com/whgk/p/7191152.html">
+                            20. springmvc(四) springmvc的数据校验的实现(9)
+                        </a>
+                    </li>
+        </ul>
+    </div>
+</div>
+
+</div>
+
+<!-- 推荐排行榜 -->
+<div id="sidebar_topdiggedposts" class="sidebar-block">
+<div id="topdigg_posts_wrap">
+    <div class="catListView">
+        <h3 class="catListTitle">推荐排行榜</h3>
+        <div id="TopDiggPostsBlock">
+            <ul style="word-break: break-all">
+                        <li>
+                            <a href="https://www.cnblogs.com/whgk/p/7112560.html">
+                                1. maven(一) maven到底是个啥玩意~(276)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.cnblogs.com/whgk/p/6399262.html">
+                                2. Java Web(一) Servlet详解！！(138)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.cnblogs.com/whgk/p/6071617.html">
+                                3. hashcode详解(48)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.cnblogs.com/whgk/p/7121336.html">
+                                4. maven(二) maven项目构建ssh工程(父工程与子模块的拆分与聚合)(45)
+                            </a>
+                        </li>
+                        <li>
+                            <a href="https://www.cnblogs.com/whgk/p/6422391.html">
+                                5. Java Web(三) 会话机制，Cookie和Session详解(34)
+                            </a>
+                        </li>
+            </ul>
+        </div>
+    </div>
+</div></div></div>
+                    <script>loadBlogSideColumn();</script>
+			</div>			
+		</div><!--end: sideBarMain -->
+	</div><!--end: sideBar 侧边栏容器 -->
+	<div class="clear"></div>
+	</div><!--end: main -->
+	<div class="clear"></div>
+	<div id="footer"><footer><footer-background><figure class="clouds"></figure><figure class="background"></figure><figure class="foreground"></figure></footer-background></footer><div class="footer-box"><div><span id="blogRunTimeSpan">This blog has running : 1979 d 12 h 11 m 42 s</span><span class="my-face">ღゝ◡╹)ノ♡</span></div><div id="blogrollInfo"></div><div>
+		
+Copyright © 2021 有梦想的老王
+Powered by .NET 5.0 on Kubernetes
+
+
+
+	</div><div id="cnzzInfo"></div><div id="themeInfo">Theme version: <a href="https://github.com/BNDong/Cnblogs-Theme-SimpleMemory/tree/v1.3.2" target="_blank" style="color: #888;text-decoration: underline;">v1.3.2</a> / Loading theme version: <a href="https://github.com/BNDong/Cnblogs-Theme-SimpleMemory/tree/v1.3.2" target="_blank" style="color: #888;text-decoration: underline;">v1.3.2</a></div></div></div><!--end: footer -->
+</div><!--end: home 自定义的最大容器 -->
+
+
+    
+
+    <input type="hidden" id="antiforgery_token" value="CfDJ8L-rpLgFVEJMgssCVvNUAjsrONDY8zQoFkpR6Wr1I23odEchbyg-inOWXb3ivB7n-RT19PlL8SQeXMt3PQO5Kq_1-5HZVAnbAkdExKmXxBGyeCkIxYlVgg4a-KXyIFV4QfZ4fX-8mwh17CcEGq2FIbg">
+
+
+<script type="text/javascript">
+    window.cnblogsConfig = {
+        GhVersions    : 'v1.3.2', // 版本
+        GhUserName: 'BNDong',
+        blogUser      : "有梦想的老王", // 用户名
+        blogAvatar    : "https://images.cnblogs.com/cnblogs_com/whgk/1816152/o_200729030300%E8%8B%8F%E5%AE%81%E8%B1%86%E8%8A%BD%E5%9B%BE%E7%89%8720200729110232784.png", // 用户头像
+        blogStartDate : "2016-1-6", // 入园时间，年-月-日。入园时间查看方法：鼠标停留园龄时间上，会显示入园时间
+        homeTopImg: [
+        "https://w.wallhaven.cc/full/72/wallhaven-7299qv.jpg"
+       //"https://images.cnblogs.com/cnblogs_com/whgk/1955315/t_21033113245711.jpeg"
+       // "https://cdn.jsdelivr.net/gh/BNDong/Cnblogs-Theme-SimpleMemory@master/img/webp/home_top_bg.webp"
+    ],
+       homeBannerText: "根植于内心的修养，无需提醒的自觉。以约束为前提的自由，为别人着想的善良。",
+         codeLineNumber: false,
+    }
+</script><script type="text/javascript">getFollowStatus('96c1a905-47b4-e511-9fc1-ac853d9f53cc');</script><canvas style="display: block; position: fixed; margin: 0px; padding: 0px; border: 0px none; outline: currentcolor none 0px; left: 0px; top: 0px; width: 100%; height: 100%; z-index: -1;" id="bgCanvas" width="1408" height="652"></canvas><div id="sideToolbar" style="display: block; top: 266px; right: 0px;" class="sideToolbarFix"><span class="catalog-btn catalog-btn-shadow" style="display: none;"><i class="iconfont icon-mulu"></i></span><div class="sideCatalogBg" id="sideCatalog" style="display: none;"><div id="sideCatalog-sidebar"><div class="sideCatalog-sidebar-top"></div><div class="sideCatalog-sidebar-bottom"></div></div><div id="sideCatalog-catalog" class="mCustomScrollbar _mCS_1 mCS-autoHide" style="overflow: visible;"><div id="mCSB_1" class="mCustomScrollBox mCS-minimal-dark mCSB_vertical_horizontal mCSB_outside" style="max-height: 0px;" tabindex="0"><div id="mCSB_1_container" class="mCSB_container mCS_y_hidden mCS_no_scrollbar_y" style="position: relative; top: 0px; left: -230px; width: 230px;" dir="ltr"><ul class="nav" style="width:230px;zoom:1"></ul></div></div><div id="mCSB_1_scrollbar_vertical" class="mCSB_scrollTools mCSB_1_scrollbar mCS-minimal-dark mCSB_scrollTools_vertical" style="display: none;"><div class="mCSB_draggerContainer"><div id="mCSB_1_dragger_vertical" class="mCSB_dragger" style="position: absolute; min-height: 50px; top: 0px;"><div class="mCSB_dragger_bar" style="line-height: 50px;"></div></div><div class="mCSB_draggerRail"></div></div></div><div id="mCSB_1_scrollbar_horizontal" class="mCSB_scrollTools mCSB_1_scrollbar mCS-minimal-dark mCSB_scrollTools_horizontal" style="display: block;"><div class="mCSB_draggerContainer"><div id="mCSB_1_dragger_horizontal" class="mCSB_dragger" style="position: absolute; min-width: 50px; display: block; width: 0px; left: 0px;"><div class="mCSB_dragger_bar"></div></div><div class="mCSB_draggerRail"></div></div></div></div></div><a href="javascript:void(0);" id="sideCatalogBtn" class="sideCatalogBtnDisable"></a></div><iframe id="google_osd_static_frame_3492089272740" name="google_osd_static_frame" style="display: none; width: 0px; height: 0px;"></iframe><iframe src="https://www.google.com/recaptcha/api2/aframe" style="display: none;" width="0" height="0"></iframe></body><div id="edge-translate-notifier-container" class="edge-translate-notifier-center"></div></html>
